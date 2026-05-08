@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shivam Vishwakarma | Portfolio</title>
+    <meta name="description"
+        content="Portfolio of Shivam Vishwakarma, B.Tech CSE Student, AI/ML Developer, and Full-Stack Python Expert.">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Background Canvas -->
+    <canvas id="neural-canvas"></canvas>
+
+    <!-- Header / Navigation -->
+    <header class="glass-header">
+        <div class="logo">
+            <svg class="logo-img" viewBox="0 0 100 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- S letter -->
+                <path d="M10 18 C10 12, 16 8, 24 8 C32 8, 38 12, 38 18 C38 24, 32 27, 24 30 C16 33, 10 36, 10 43 C10 50, 16 54, 24 54 C32 54, 38 50, 38 44"
+                    stroke="#d4af37" stroke-width="5" stroke-linecap="round" fill="none"/>
+                <!-- V letter -->
+                <path d="M45 8 L62 54 L80 8"
+                    stroke="#d4af37" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <!-- Inner V line for double stroke effect -->
+                <path d="M50 8 L62 46 L74 8"
+                    stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.5"/>
+            </svg>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#education">Education</a></li>
+                <li><a href="#achievements">Achievements</a></li>
+                <li><a href="#certifications">Certifications</a></li>
+                <li><a href="#workshops">Workshops</a></li>
+                <li><a href="#resume">Resume</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="hamburger">
+            <i class="fas fa-bars"></i>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="hero section-padding">
+
+            <!-- ONE BIG GLASS FRAME wrapping everything -->
+            <div class="hero-big-frame reveal">
+
+                <!-- LEFT: Name + Social Icons -->
+                <div class="hero-left">
+                    <h1 class="hero-name animate-hero" style="animation-delay: 0.7s;">
+                        <span class="hero-name-first">Shivam</span>
+                        <span class="hero-name-last">Vishwakarma</span>
+                    </h1>
+                    <div class="hero-name-line animate-hero" style="animation-delay: 0.8s;"></div>
+                    <div class="hero-socials animate-hero" style="animation-delay: 1.8s;">
+                        <a href="https://github.com/shivamvishwakarma0000" target="_blank" class="hero-social-link" aria-label="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/shivam-vishwakarma88/" target="_blank" class="hero-social-link" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="mailto:vishshivam16@gmail.com" class="hero-social-link" aria-label="Email">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                        <a href="https://www.instagram.com/shivam.vishwakarma02/" target="_blank" class="hero-social-link" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- CENTER: Profile Image (no inner box) -->
+                <div class="hero-center animate-hero" style="animation-delay: 1.6s;">
+                    <img src="assets/profile.png" alt="Shivam Vishwakarma" class="hero-bare-image">
+                </div>
+
+                <!-- RIGHT: Software Engineer + Intro -->
+                <div class="hero-right">
+                    <p class="hero-intro-tag animate-hero" style="animation-delay: 0.1s;"><span class="hero-intro-symbol">✦</span> Introducing</p>
+                    <h2 class="hero-intro-title animate-hero" style="animation-delay: 1.4s;">Software<br>Developer</h2>
+                    <p class="hero-intro-text animate-hero" style="animation-delay: 1.7s;">
+                        A driven developer dedicated to turning bold visions into high-impact reality through relentless execution. Let's build something extraordinary together.
+                    </p>
+                    <a href="#projects" class="btn-primary hero-cta animate-hero" style="animation-delay: 1.9s;">View My Work <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+            </div>
+        </section>
+
+
+
+
+
+
+        <!-- About Section -->
+        <section id="about" class="about section-padding">
+            <div class="container">
+                <h2 class="section-title reveal">About Me <span class="accent-dot"></span></h2>
+                <div class="about-grid reveal delay-1" style="grid-template-columns: 1fr;">
+                    <div class="about-text glass-card">
+                        <p>I am a dedicated Computer Science Engineer currently pursuing my B.Tech at Parul University, with a specialized focus on building high-impact solutions through AI, Machine Learning, and Full-Stack Development.</p>
+                        <p>My journey in technology is driven by a deep fascination with creating user-centric and innovative solutions. I have cultivated a strong foundation in modern web technologies and AI integration, significantly enhanced by my hands-on experience during an AICTE internship with Microsoft and SAP.</p>
+                        <p>Currently, I am also sharpening my analytical and problem-solving skills through Data Structures and Algorithms in Java. Programming isn't just my profession—it's my passion.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="skills section-padding">
+            <div class="container">
+                <h2 class="section-title reveal">Tech Stack <span class="accent-dot"></span></h2>
+                <p class="section-subtitle reveal">Languages, frameworks, and tools I use to build scalable
+                    applications.</p>
+                <div class="skills-grid reveal delay-1">
+                    <!-- Category 1 -->
+                    <div class="skill-category">
+                        <h4 class="category-title">Core Technologies</h4>
+                        <div class="skill-items">
+                            <div class="skill-card 3d-card"><i class="fab fa-python skill-icon"></i><span>Python</span>
+                            </div>
+                            <div class="skill-card 3d-card"><i class="fab fa-java skill-icon"></i><span>Java &
+                                    DSA</span></div>
+                            <div class="skill-card 3d-card"><i class="fab fa-js skill-icon"></i><span>JavaScript</span>
+                            </div>
+                            <div class="skill-card 3d-card"><i class="fab fa-html5 skill-icon"></i><span>HTML5</span>
+                            </div>
+                            <div class="skill-card 3d-card"><i class="fab fa-css3-alt skill-icon"></i><span>CSS3</span>
+                            </div>
+                            <div class="skill-card 3d-card"><i class="fas fa-code skill-icon"></i><span>C++</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Category 2 -->
+                    <div class="skill-category">
+                        <h4 class="category-title">Frameworks & Backend</h4>
+                        <div class="skill-items">
+                            <div class="skill-card 3d-card"><i class="fab fa-react skill-icon"></i><span>React</span>
+                            </div>
+                            <div class="skill-card 3d-card"><i
+                                    class="fab fa-angular skill-icon"></i><span>Angular</span></div>
+                            <div class="skill-card 3d-card"><i
+                                    class="fab fa-node-js skill-icon"></i><span>Node.js</span></div>
+                            <div class="skill-card 3d-card"><i class="fas fa-flask skill-icon"></i><span>Flask</span>
+                            </div>
+                            <div class="skill-card 3d-card"><i class="fas fa-cubes skill-icon"></i><span>Django</span>
+                            </div>
+                            <div class="skill-card 3d-card"><i class="fas fa-database skill-icon"></i><span>SQL &
+                                    MongoDB</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Category 3 -->
+                    <div class="skill-category">
+                        <h4 class="category-title">Tools & Engineering</h4>
+                        <div class="skill-items">
+                            <div class="skill-card 3d-card"><i class="fas fa-terminal skill-icon"></i><span>VS
+                                    Code</span></div>
+                            <div class="skill-card 3d-card"><i class="fas fa-microchip skill-icon"></i><span>IntelliJ
+                                    IDEA</span></div>
+                            <div class="skill-card 3d-card"><i
+                                    class="fas fa-desktop skill-icon"></i><span>PyCharm</span></div>
+                            <div class="skill-card 3d-card"><i class="fab fa-figma skill-icon"></i><span>UX
+                                    Design</span></div>
+                            <div class="skill-card 3d-card"><i class="fab fa-git-alt skill-icon"></i><span>Git</span>
+                            </div>
+                            <div class="skill-card 3d-card"><i class="fab fa-github skill-icon"></i><span>GitHub</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="projects section-padding">
+            <div class="container">
+                <h2 class="section-title reveal">Featured Projects <span class="accent-dot"></span></h2>
+                <div class="projects-grid">
+                    <!-- Project 1 -->
+                    <div class="project-card glass-card reveal">
+                        <div class="project-content">
+                            <h3>SmartVision <br><span class="project-sub">(Selfie Smart Attendance)</span></h3>
+                            <p>A Flask-based AI portal utilizing facial recognition technology for automated, accurate,
+                                and seamless attendance tracking.</p>
+                            <div class="project-tags">
+                                <span>Python</span>
+                                <span>Flask</span>
+                                <span>OpenCV</span>
+                                <span>AI/ML</span>
+                            </div>
+                            <a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- Project 2 -->
+                    <div class="project-card glass-card reveal delay-1">
+                        <div class="project-content">
+                            <h3>PrepGuardian <br><span class="project-sub">(Digital Subedar)</span></h3>
+                            <p>An AI-powered discipline enforcement tool and study assistant designed specifically for
+                                competitive exam preparation (SSC CGL/UPSC).</p>
+                            <div class="project-tags">
+                                <span>AI</span>
+                                <span>React Native</span>
+                                <span>Node.js</span>
+                            </div>
+                            <a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- Project 3 -->
+                    <div class="project-card glass-card reveal delay-2">
+                        <div class="project-content">
+                            <h3>AI Fitness Tracker</h3>
+                            <p>Developed during the AICTE Microsoft/SAP internship. An intelligent tracker that analyzes
+                                user movement and provides real-time fitness insights.</p>
+                            <div class="project-tags">
+                                <span>Python</span>
+                                <span>Machine Learning</span>
+                            </div>
+                            <a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience" class="experience section-padding">
+            <div class="container">
+                <div class="timeline-wrapper reveal">
+                    <h2 class="section-title">Experience <span class="accent-dot"></span></h2>
+                    <div class="timeline">
+                        <div class="timeline-item glass-card">
+                            <div class="timeline-dot"></div>
+                            <h4>AICTE Intern | AI Transformative Learning</h4>
+                            <h5 class="gradient-text">Microsoft & SAP (TechSaksham)</h5>
+                            <p class="timeline-date">Feb 2025 - Present</p>
+                            <p>Working on AI-powered solutions using Python, Flask, and Machine Learning to solve
+                                real-world problems. Developed modules for data processing, model training, and API
+                                integration.</p>
+                        </div>
+                        <div class="timeline-item glass-card">
+                            <div class="timeline-dot"></div>
+                            <h4>Campus Ambassador</h4>
+                            <h5 class="gradient-text">IIT Gandhinagar (Blithchron)</h5>
+                            <p>Represented the tech and cultural festival, building networks and driving engagement.</p>
+                        </div>
+                        <div class="timeline-item glass-card">
+                            <div class="timeline-dot"></div>
+                            <h4>Team Leader</h4>
+                            <h5 class="gradient-text">Alpha Intern</h5>
+                            <p>Led a team of developers, managed project workflows, and ensured successful delivery of
+                                tech solutions.</p>
+                        </div>
+                        <div class="timeline-item glass-card">
+                            <div class="timeline-dot"></div>
+                            <h4>Web Developer</h4>
+                            <h5 class="gradient-text">Codelevate</h5>
+                            <p>Developed dynamic, responsive websites focusing on both aesthetics and robust backend
+                                functionality.</p>
+                        </div>
+                        <div class="timeline-item glass-card">
+                            <div class="timeline-dot"></div>
+                            <h4>Google Cloud Arcade Ranger</h4>
+                            <h5 class="gradient-text">Google Cloud Platform</h5>
+                            <p>Completed extensive hands-on labs and quests, gaining practical experience in GKE,
+                                containerization, and data analytics tools.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section id="education" class="experience section-padding">
+            <div class="container">
+                <div class="timeline-wrapper reveal">
+                    <h2 class="section-title">Education <span class="accent-dot"></span></h2>
+                    <div class="timeline">
+                        <div class="timeline-item glass-card">
+                            <div class="timeline-dot"></div>
+                            <h4>B.Tech Computer Science</h4>
+                            <h5 class="gradient-text">Parul University</h5>
+                            <p class="timeline-date">Expected 2027</p>
+                            <p>Focusing on AI/ML and software engineering.</p>
+                        </div>
+                        <div class="timeline-item glass-card">
+                            <div class="timeline-dot"></div>
+                            <h4>Higher Secondary School (12th Grade)</h4>
+                            <h5 class="gradient-text">S.N. Public School, Mirzapur</h5>
+                            <p class="timeline-date">73%</p>
+                            <p>Completed with a focus on science and technical foundation.</p>
+                        </div>
+                        <div class="timeline-item glass-card">
+                            <div class="timeline-dot"></div>
+                            <h4>Secondary School (10th Grade)</h4>
+                            <h5 class="gradient-text">S.N. Public School, Mirzapur</h5>
+                            <p class="timeline-date">81.4%</p>
+                            <p>Strong academic performance with a focus on mathematics and science.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Coding Achievements Section -->
+        <section id="achievements" class="certifications section-padding">
+            <div class="container">
+                <h2 class="section-title reveal">Coding Achievements <span class="accent-dot"></span></h2>
+                <p class="section-subtitle reveal">Recognitions for consistency and problem-solving on competitive
+                    platforms.</p>
+                <div class="projects-grid">
+                    <!-- Achievement 1: LeetCode 50 Days -->
+                    <div class="project-card glass-card reveal">
+                        <div class="achievement-img-container">
+                            <img src="assets/badge-leetcode-50.png" alt="LeetCode 50 Days Badge"
+                                class="achievement-badge"
+                                onerror="this.src='https://placehold.co/200x200/12192b/d4af23?text=50+Days'">
+                        </div>
+                        <div class="project-content">
+                            <h3>50 Days Badge 2025</h3>
+                            <p class="gradient-text">LeetCode</p>
+                            <p>Awarded for consistent problem-solving for 50+ days in the year 2025.</p>
+                        </div>
+                    </div>
+
+                    <!-- Achievement 2: LeetCode DCC -->
+                    <div class="project-card glass-card reveal delay-1">
+                        <div class="achievement-img-container">
+                            <img src="assets/badge-dcc.png" alt="LeetCode DCC April" class="achievement-badge"
+                                onerror="this.src='https://placehold.co/200x200/12192b/d4af23?text=DCC+April'">
+                        </div>
+                        <div class="project-content">
+                            <h3>DCC April 2025</h3>
+                            <p class="gradient-text">LeetCode</p>
+                            <p>Completed the Daily Coding Challenge for the month of April 2025.</p>
+                        </div>
+                    </div>
+
+                    <!-- Achievement 3: CodeChef Bronze -->
+                    <div class="project-card glass-card reveal delay-2">
+                        <div class="achievement-img-container">
+                            <img src="assets/badge-codechef-bronze.png" alt="CodeChef Bronze Badge"
+                                class="achievement-badge"
+                                onerror="this.src='https://placehold.co/200x200/12192b/d4af23?text=CodeChef+Bronze'">
+                        </div>
+                        <div class="project-content">
+                            <h3>Problem Solver Bronze</h3>
+                            <p class="gradient-text">CodeChef</p>
+                            <p>Awarded for successfully solving 50+ problems on the CodeChef platform.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Certifications Section -->
+        <section id="certifications" class="certifications section-padding">
+            <div class="container">
+                <h2 class="section-title reveal">Certifications <span class="accent-dot"></span></h2>
+                <div class="projects-grid">
+                    <!-- Certificate 1 -->
+                    <div class="project-card glass-card reveal">
+                        <div class="cert-image-container"
+                            style="width: 100%; height: 200px; background: rgba(212, 175, 55, 0.05); border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--primary-color); overflow: hidden;">
+                            <img src="assets/cert-reliance.png" alt="Reliance Foundation Certificate"
+                                style="width: 100%; height: 100%; object-fit: cover; display: none;"
+                                onload="this.style.display='block'; this.parentElement.style.border='none'; this.parentElement.querySelector('span').style.display='none';">
+                            <span style="color: var(--text-secondary); font-size: 0.9rem;"><i class="fas fa-image"></i>
+                                Add cert-reliance.png</span>
+                        </div>
+                        <div class="project-content">
+                            <h3>AI-Machine Learning Engineer Foundation</h3>
+                            <h5 class="project-sub">Reliance Foundation Skilling Academy</h5>
+                        </div>
+                    </div>
+
+                    <!-- Certificate 2 -->
+                    <div class="project-card glass-card reveal delay-1">
+                        <div class="cert-image-container"
+                            style="width: 100%; height: 200px; background: rgba(212, 175, 55, 0.05); border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--primary-color); overflow: hidden;">
+                            <img src="assets/cert-tcs.png" alt="TCS iON Certificate"
+                                style="width: 100%; height: 100%; object-fit: cover; display: none;"
+                                onload="this.style.display='block'; this.parentElement.style.border='none'; this.parentElement.querySelector('span').style.display='none';">
+                            <span style="color: var(--text-secondary); font-size: 0.9rem;"><i class="fas fa-image"></i>
+                                Add cert-tcs.png</span>
+                        </div>
+                        <div class="project-content">
+                            <h3>Career Edge - Young Professional</h3>
+                            <h5 class="project-sub">TCS iON</h5>
+                        </div>
+                    </div>
+
+                    <!-- Certificate 3 -->
+                    <div class="project-card glass-card reveal delay-2">
+                        <div class="cert-image-container"
+                            style="width: 100%; height: 200px; background: rgba(212, 175, 55, 0.05); border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--primary-color); overflow: hidden;">
+                            <img src="assets/cert-udemy.png" alt="Udemy Certificate"
+                                style="width: 100%; height: 100%; object-fit: cover; display: none;"
+                                onload="this.style.display='block'; this.parentElement.style.border='none'; this.parentElement.querySelector('span').style.display='none';">
+                            <span style="color: var(--text-secondary); font-size: 0.9rem;"><i class="fas fa-image"></i>
+                                Add cert-udemy.png</span>
+                        </div>
+                        <div class="project-content">
+                            <h3>CSS, Bootstrap, JavaScript, Web Development</h3>
+                            <h5 class="project-sub">Udemy</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Workshops Section -->
+        <section id="workshops" class="certifications section-padding">
+            <div class="container">
+                <h2 class="section-title reveal">Workshops & Training <span class="accent-dot"></span></h2>
+                <div class="projects-grid">
+                    <!-- Workshop 1 -->
+                    <div class="project-card glass-card reveal">
+                        <div class="cert-image-container"
+                            style="width: 100%; height: 200px; background: rgba(212, 175, 55, 0.05); border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--primary-color); overflow: hidden;">
+                            <img src="assets/cert-isro.png" alt="ISRO Workshop Certificate"
+                                style="width: 100%; height: 100%; object-fit: cover; display: none;"
+                                onload="this.style.display='block'; this.parentElement.style.border='none'; this.parentElement.querySelector('span').style.display='none';">
+                            <span style="color: var(--text-secondary); font-size: 0.9rem;"><i class="fas fa-image"></i>
+                                Add cert-isro.png</span>
+                        </div>
+                        <div class="project-content">
+                            <h3>Application of AI/ML Model for Specific Crop Acreage Mapping</h3>
+                            <h5 class="project-sub">ISRO (Indian Space Research Organisation)</h5>
+                        </div>
+                    </div>
+
+                    <!-- Workshop 2 -->
+                    <div class="project-card glass-card reveal delay-1">
+                        <div class="cert-image-container"
+                            style="width: 100%; height: 200px; background: rgba(212, 175, 55, 0.05); border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--primary-color); overflow: hidden;">
+                            <img src="assets/cert-figma.png" alt="Parul University Figma Certificate"
+                                style="width: 100%; height: 100%; object-fit: cover; display: none;"
+                                onload="this.style.display='block'; this.parentElement.style.border='none'; this.parentElement.querySelector('span').style.display='none';">
+                            <span style="color: var(--text-secondary); font-size: 0.9rem;"><i class="fas fa-image"></i>
+                                Add cert-figma.png</span>
+                        </div>
+                        <div class="project-content">
+                            <h3>Design Smarter: A UX Masterclass with Figma</h3>
+                            <h5 class="project-sub">Parul University</h5>
+                        </div>
+                    </div>
+
+                    <!-- Workshop 3 -->
+                    <div class="project-card glass-card reveal delay-2">
+                        <div class="cert-image-container"
+                            style="width: 100%; height: 200px; background: rgba(212, 175, 55, 0.05); border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--primary-color); overflow: hidden;">
+                            <img src="assets/cert-google-workspace.png" alt="Google Workspace Workshop Certificate"
+                                style="width: 100%; height: 100%; object-fit: cover; display: none;"
+                                onload="this.style.display='block'; this.parentElement.style.border='none'; this.parentElement.querySelector('span').style.display='none';">
+                            <span style="color: var(--text-secondary); font-size: 0.9rem;"><i class="fas fa-image"></i>
+                                Add cert-google-workspace.png</span>
+                        </div>
+                        <div class="project-content">
+                            <h3>Bring AI to Work Workshop</h3>
+                            <h5 class="project-sub">Google Workspace</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+
+        <!-- Resume & CV Section -->
+        <section id="resume" class="section-padding">
+            <div class="container">
+                <h2 class="section-title reveal">Resume & CV <span class="accent-dot"></span></h2>
+                <div class="projects-grid">
+                    <!-- Resume Card -->
+                    <div class="project-card glass-card reveal">
+                        <div class="cert-image-container"
+                            style="width: 100%; height: 250px; background: rgba(212, 175, 55, 0.05); border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--primary-color); overflow: hidden; position: relative;">
+                            <img src="assets/resume-preview.png" alt="Resume"
+                                style="width: 100%; height: 100%; object-fit: cover; display: none;"
+                                onerror="this.src='https://placehold.co/300x400/050810/d4af37?text=RESUME'; this.style.opacity='0.5';"
+                                onload="this.style.display='block'; this.parentElement.style.border='none';">
+                        </div>
+                        <div class="project-content">
+                            <h3>Professional Resume</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">Focused
+                                on technical skills and work experience.</p>
+                            <div style="display: flex; gap: 1rem;">
+                                <a href="assets/resume.pdf" target="_blank" class="btn-outline"
+                                    style="padding: 0.6rem 1.2rem; font-size: 0.8rem; flex: 1; text-align: center;"><i
+                                        class="fas fa-eye"></i> View</a>
+                                <a href="assets/resume.pdf" class="btn-outline" download
+                                    style="padding: 0.6rem 1.2rem; font-size: 0.8rem; flex: 1; text-align: center;"><i
+                                        class="fas fa-download"></i> Download</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CV Card -->
+                    <div class="project-card glass-card reveal delay-1">
+                        <div class="cert-image-container"
+                            style="width: 100%; height: 250px; background: rgba(212, 175, 55, 0.05); border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--primary-color); overflow: hidden; position: relative;">
+                            <img src="assets/cv-preview.png" alt="Curriculum Vitae"
+                                style="width: 100%; height: 100%; object-fit: cover; display: none;"
+                                onerror="this.src='https://placehold.co/300x400/050810/d4af37?text=CV'; this.style.opacity='0.5';"
+                                onload="this.style.display='block'; this.parentElement.style.border='none';">
+                        </div>
+                        <div class="project-content">
+                            <h3>Curriculum Vitae</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                                Comprehensive academic and professional history.</p>
+                            <div style="display: flex; gap: 1rem;">
+                                <a href="assets/cv.pdf" target="_blank" class="btn-outline"
+                                    style="padding: 0.6rem 1.2rem; font-size: 0.8rem; flex: 1; text-align: center;"><i
+                                        class="fas fa-eye"></i> View</a>
+                                <a href="assets/cv.pdf" class="btn-outline" download
+                                    style="padding: 0.6rem 1.2rem; font-size: 0.8rem; flex: 1; text-align: center;"><i
+                                        class="fas fa-download"></i> Download</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact section-padding">
+            <div class="container">
+                <div class="contact-wrapper glass-card reveal">
+                    <div class="contact-info">
+                        <h2 class="section-title">Let's Talk <span class="accent-dot">.</span></h2>
+                        <p>Whether you're looking to build a new website, improve your existing platform, or bring a
+                            unique project to life, I'm here to help.</p>
+
+                        <div class="contact-details">
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Vadodara, Gujarat, India</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-envelope"></i>
+                                <a href="mailto:vishshivam16@gmail.com">vishshivam16@gmail.com</a>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-phone-alt"></i>
+                                <a href="tel:+918858496345">+91 8858496345</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-form-container">
+                        <!-- Replace 'YOUR_FORM_ID' with your actual Formspree ID after signing up at formspree.io -->
+                        <form class="contact-form" action="https://formspree.io/f/mojrlqnn" method="POST">
+                            <div class="form-group">
+                                <input type="text" name="name" id="name" placeholder="Your Name" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" name="email" id="email" placeholder="Your Email" required>
+                            </div>
+                            <div class="form-group">
+                                <textarea name="message" id="message" rows="4" placeholder="Your Message"
+                                    required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-outline">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="glass-footer">
+        <p>Copyright &copy; <span id="year"></span> Shivam. Made with <i class="fas fa-heart accent-text"></i> by
+            ShivamCode</p>
+    </footer>
+
+    <!-- Scroll Progress Indicator -->
+    <div id="scroll-progress-container">
+        <svg class="progress-circle" width="60" height="60" viewBox="0 0 60 60">
+            <circle class="progress-background" cx="30" cy="30" r="26"></circle>
+            <circle class="progress-bar" cx="30" cy="30" r="26"></circle>
+        </svg>
+        <span id="scroll-percentage">0%</span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+
+</html>
