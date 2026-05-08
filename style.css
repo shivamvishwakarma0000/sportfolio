@@ -1055,6 +1055,51 @@ h5 {
 /* ==========================================================================
    Responsive Design
    ========================================================================== */
+/* Profiles Grid */
+.profiles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.profile-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    border-radius: 16px;
+}
+
+.profile-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary-color);
+    box-shadow: 0 15px 30px rgba(212, 175, 55, 0.15);
+    background: rgba(212, 175, 55, 0.05);
+}
+
+.profile-icon {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.profile-card:hover .profile-icon {
+    transform: scale(1.2);
+}
+
+.profile-card h3 {
+    font-size: 1.1rem;
+    color: #ffffff;
+    font-weight: 600;
+}
+
 @media (max-width: 1024px) {
 
     .split-layout,
