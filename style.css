@@ -1768,6 +1768,13 @@ h1, h2, h3, h4, h5 {
         grid-template-columns: 1fr;
         padding: 2.5rem;
     }
+
+    .gradient-text,
+    .hero-name-last {
+        background: none !important;
+        -webkit-text-fill-color: var(--primary-color) !important;
+        color: var(--primary-color) !important;
+    }
 }
 
 @media (max-width: 480px) {
