@@ -1589,7 +1589,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 margin:       10,
                 filename:     `Shivam_${category}_${title.toLowerCase().replace(/\s+/g, '_')}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false, windowWidth: 800 },
+                html2canvas:  { scale: 2, useCORS: true, logging: false, windowWidth: 800, backgroundColor: '#ffffff' },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             
