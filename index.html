@@ -1595,6 +1595,361 @@
     </div>
 
     <!-- Scripts -->
+    <!-- Fullscreen Terminal IDE Workspace Dashboard -->
+    <div id="terminal-workspace" class="terminal-workspace">
+      <!-- IDE Header Bar -->
+      <div class="ide-header">
+        <div class="ide-title">
+          <i class="fas fa-terminal"></i> shivam@developer: ~
+        </div>
+        <div class="ide-menu-bar">
+          <span class="ide-menu-item">File</span>
+          <span class="ide-menu-item">Edit</span>
+          <span class="ide-menu-item">Selection</span>
+          <span class="ide-menu-item">View</span>
+          <span class="ide-menu-item">Terminal</span>
+          <span class="ide-menu-item">Help</span>
+        </div>
+        <div class="ide-actions">
+          <button id="ide-palette-btn" class="ide-action-btn" title="Toggle Customizer">
+            <i class="fas fa-palette"></i>
+          </button>
+          <button id="ide-exit-btn" class="ide-action-btn exit-btn" title="Exit IDE Mode">
+            <i class="fas fa-times-circle"></i> Exit Terminal
+          </button>
+        </div>
+      </div>
+
+      <div class="ide-body">
+        <!-- Explorer Sidebar (File Tree) -->
+        <div class="ide-sidebar">
+          <div class="sidebar-title">EXPLORER</div>
+          <div class="file-tree">
+            <div class="tree-node folder open">
+              <i class="fas fa-chevron-down tree-icon"></i>
+              <i class="fas fa-folder-open tree-folder-icon"></i>
+              <span>portfolio</span>
+            </div>
+            <div class="tree-node file active" data-file="about">
+              <i class="fab fa-js file-js-icon"></i>
+              <span>about_me.js</span>
+            </div>
+            <div class="tree-node file" data-file="projects">
+              <i class="fas fa-code file-json-icon"></i>
+              <span>projects.json</span>
+            </div>
+            <div class="tree-node file" data-file="skills">
+              <i class="fab fa-python file-py-icon"></i>
+              <span>skills.py</span>
+            </div>
+            <div class="tree-node file" data-file="experience">
+              <i class="fas fa-table file-csv-icon"></i>
+              <span>experience.csv</span>
+            </div>
+            <div class="tree-node file" data-file="vault">
+              <i class="fas fa-key file-key-icon"></i>
+              <span>document_vault.key</span>
+            </div>
+            <div class="tree-node file" data-file="contact">
+              <i class="fas fa-terminal file-sh-icon"></i>
+              <span>contact_form.sh</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Editor Area -->
+        <div class="ide-editor">
+          <!-- Editor Tabs -->
+          <div class="editor-tabs">
+            <div class="editor-tab active" data-file="about">
+              <i class="fab fa-js file-js-icon"></i>
+              <span>about_me.js</span>
+            </div>
+            <div class="editor-tab" data-file="projects">
+              <i class="fas fa-code file-json-icon"></i>
+              <span>projects.json</span>
+            </div>
+            <div class="editor-tab" data-file="skills">
+              <i class="fab fa-python file-py-icon"></i>
+              <span>skills.py</span>
+            </div>
+            <div class="editor-tab" data-file="experience">
+              <i class="fas fa-table file-csv-icon"></i>
+              <span>experience.csv</span>
+            </div>
+            <div class="editor-tab" data-file="vault">
+              <i class="fas fa-key file-key-icon"></i>
+              <span>document_vault.key</span>
+            </div>
+            <div class="editor-tab" data-file="contact">
+              <i class="fas fa-terminal file-sh-icon"></i>
+              <span>contact_form.sh</span>
+            </div>
+          </div>
+
+          <!-- Editor Work Area -->
+          <div class="editor-workspace">
+            <!-- Line Numbers Left Column -->
+            <div class="editor-lines">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span>
+            </div>
+
+            <!-- Viewports for each file content -->
+            <div class="editor-panes">
+              <!-- PANE 1: ABOUT ME (JS) -->
+              <div class="editor-pane active" id="pane-about">
+                <div class="code-view">
+                  <div class="code-line"><span class="c-keyword">import</span> { Developer } <span class="c-keyword">from</span> <span class="c-string">'developer-profile'</span>;</div>
+                  <div class="code-line"><span class="c-keyword">import</span> avatar <span class="c-keyword">from</span> <span class="c-string">'./assets/profile.png'</span>;</div>
+                  <div class="code-line">&nbsp;</div>
+                  <div class="code-line"><span class="c-keyword">export default function</span> <span class="c-function">ShivamProfile</span>() {</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-keyword">return</span> (</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="c-tag">Developer</span></div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-attr">name</span>=<span class="c-string">"Shivam Vishwakarma"</span></div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-attr">role</span>=<span class="c-string">"Full Stack & Backend Developer"</span></div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-attr">focus</span>={<span class="c-string">"Secure Microservices, Cloud Infrastructures"</span>}</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-attr">location</span>=<span class="c-string">"India"</span></div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="c-tag">p</span>&gt;Building high-performance APIs and scalable architectures.&lt;/<span class="c-tag">p</span>&gt;</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span class="c-tag">Developer</span>&gt;</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;);</div>
+                  <div class="code-line">}</div>
+                </div>
+                
+                <div class="pane-rendered-preview">
+                  <div class="preview-title"><i class="fas fa-play"></i> LIVE RENDERED PROFILE VIEW</div>
+                  <div class="terminal-bio-card">
+                    <div class="terminal-avatar-wrapper">
+                      <!-- Render profile picture or icon -->
+                      <div class="terminal-avatar-box">
+                        <i class="fas fa-user-cog"></i>
+                      </div>
+                    </div>
+                    <div class="terminal-bio-text">
+                      <h3>Shivam Vishwakarma</h3>
+                      <p class="role-badge">Full Stack & Backend Developer</p>
+                      <p class="bio-desc">
+                        A passionate backend-focused software engineer with expertise in microservices architectures, server logic, database optimizations, and security vault implementations.
+                      </p>
+                      <div class="social-logs">
+                        <a href="https://github.com/shivamvishwakarma0000" target="_blank"><i class="fab fa-github"></i> github.log</a>
+                        <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin"></i> linkedin.log</a>
+                        <a href="https://shivam8858-smart-vision.hf.space" target="_blank"><i class="fas fa-globe"></i> smartvision.run</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PANE 2: PROJECTS (JSON) -->
+              <div class="editor-pane" id="pane-projects">
+                <div class="code-view">
+                  <div class="code-line">[</div>
+                  <div class="code-line">&nbsp;&nbsp;{</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">"name"</span>: <span class="c-string">"SmartVision"</span>,</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">"sub"</span>: <span class="c-string">"Selfie Smart Attendance"</span>,</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">"url"</span>: <span class="c-string">"https://shivam8858-smart-vision.hf.space"</span></div>
+                  <div class="code-line">&nbsp;&nbsp;},</div>
+                  <div class="code-line">&nbsp;&nbsp;{</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">"name"</span>: <span class="c-string">"PrepGuardian"</span>,</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">"sub"</span>: <span class="c-string">"Digital Subedar"</span>,</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">"url"</span>: <span class="c-string">"https://prepguardian.netlify.app"</span></div>
+                  <div class="code-line">&nbsp;&nbsp;}</div>
+                  <div class="code-line">]</div>
+                </div>
+
+                <div class="pane-rendered-preview">
+                  <div class="preview-title"><i class="fas fa-project-diagram"></i> ACTIVE PROJECTS ENGINE</div>
+                  <div class="terminal-projects-grid">
+                    <!-- Project 1 -->
+                    <div class="terminal-project-card">
+                      <div class="card-bar"><span>SmartVision</span></div>
+                      <div class="card-body">
+                        <p class="terminal-sub">Selfie Smart Attendance</p>
+                        <p class="desc">A Flask-based AI portal utilizing facial recognition technology for automated, accurate, and seamless attendance tracking.</p>
+                        <div class="tags"><span>Python</span><span>Flask</span><span>OpenCV</span></div>
+                        <a href="https://shivam8858-smart-vision.hf.space" target="_blank" class="t-project-link">View Project <i class="fas fa-external-link-alt"></i></a>
+                      </div>
+                    </div>
+                    <!-- Project 2 -->
+                    <div class="terminal-project-card">
+                      <div class="card-bar"><span>PrepGuardian</span></div>
+                      <div class="card-body">
+                        <p class="terminal-sub">Digital Subedar</p>
+                        <p class="desc">An AI-powered discipline enforcement tool and study assistant designed specifically for competitive exam preparation.</p>
+                        <div class="tags"><span>AI</span><span>React Native</span><span>Node.js</span></div>
+                        <a href="https://prepguardian.netlify.app" target="_blank" class="t-project-link">View Project <i class="fas fa-external-link-alt"></i></a>
+                      </div>
+                    </div>
+                    <!-- Project 3 -->
+                    <div class="terminal-project-card">
+                      <div class="card-bar"><span>AI Fitness Tracker</span></div>
+                      <div class="card-body">
+                        <p class="terminal-sub">AI Pose Analysis</p>
+                        <p class="desc">Developed during internship. An intelligent tracker that analyzes user movement and provides real-time fitness insights.</p>
+                        <div class="tags"><span>Python</span><span>Machine Learning</span></div>
+                        <a href="https://github.com/shivamvishwakarma0000" target="_blank" class="t-project-link">View Project <i class="fas fa-external-link-alt"></i></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PANE 3: SKILLS (PY) -->
+              <div class="editor-pane" id="pane-skills">
+                <div class="code-view">
+                  <div class="code-line"><span class="c-keyword">def</span> <span class="c-function">get_technical_skills</span>():</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;return {</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-string">"backend"</span>: [<span class="c-string">"Node.js"</span>, <span class="c-string">"Python"</span>, <span class="c-string">"Flask"</span>, <span class="c-string">"Express"</span>],</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-string">"database"</span>: [<span class="c-string">"MongoDB"</span>, <span class="c-string">"PostgreSQL"</span>, <span class="c-string">"Redis"</span>],</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-string">"devops"</span>: [<span class="c-string">"Docker"</span>, <span class="c-string">"Git"</span>, <span class="c-string">"CI/CD"</span>]</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                </div>
+
+                <div class="pane-rendered-preview">
+                  <div class="preview-title"><i class="fas fa-cogs"></i> DIAGNOSTIC SKILL GAUGES</div>
+                  <div class="terminal-skills-list">
+                    <div class="skill-gauge">
+                      <div class="gauge-label">Backend (Node/Python/Flask)</div>
+                      <div class="gauge-bar"><div class="fill" style="width: 88%"></div></div>
+                    </div>
+                    <div class="skill-gauge">
+                      <div class="gauge-label">Database (Postgres/Mongo)</div>
+                      <div class="gauge-bar"><div class="fill" style="width: 82%"></div></div>
+                    </div>
+                    <div class="skill-gauge">
+                      <div class="gauge-label">Security & Encryption</div>
+                      <div class="gauge-bar"><div class="fill" style="width: 80%"></div></div>
+                    </div>
+                    <div class="skill-gauge">
+                      <div class="gauge-label">Frontend (HTML/CSS/React)</div>
+                      <div class="gauge-bar"><div class="fill" style="width: 75%"></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PANE 4: EXPERIENCE (CSV) -->
+              <div class="editor-pane" id="pane-experience">
+                <div class="code-view">
+                  <div class="code-line">Year,Role,Company,Highlights</div>
+                  <div class="code-line">2024,Backend Developer,Freelance,Security vaults, REST microservices</div>
+                  <div class="code-line">2023,Full Stack Intern,Internship,API development, database design</div>
+                </div>
+
+                <div class="pane-rendered-preview">
+                  <div class="preview-title"><i class="fas fa-history"></i> EXPERIENCE & TIMELINE TRACKS</div>
+                  <div class="terminal-experience-table">
+                    <div class="table-row table-header">
+                      <span>Timeline</span>
+                      <span>Designation</span>
+                      <span>Details</span>
+                    </div>
+                    <div class="table-row">
+                      <span class="year">2024 - Present</span>
+                      <span class="role">Backend Developer (Freelance)</span>
+                      <span class="details">Engineered secure microservices, JWT authentication schemes, and dynamic portfolios.</span>
+                    </div>
+                    <div class="table-row">
+                      <span class="year">2023</span>
+                      <span class="role">Full Stack Intern</span>
+                      <span class="details">Assisted in developing dashboard platforms, database schema normalization, and UI redesign.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PANE 5: VAULT (KEY) -->
+              <div class="editor-pane" id="pane-vault">
+                <div class="code-view">
+                  <div class="code-line"><span class="c-keyword">const</span> secureKey = <span class="c-string">"DECRYPTION_KEYS_REQUIRED"</span>;</div>
+                  <div class="code-line"><span class="c-comment">// Input correct portfolio credentials below to unlock private PDFs</span></div>
+                </div>
+
+                <div class="pane-rendered-preview">
+                  <div class="preview-title"><i class="fas fa-lock"></i> DECRYPTION VAULT TERMINAL</div>
+                  <div class="terminal-vault-widget">
+                    <div id="ide-vault-unlocked" style="display: none;">
+                      <p class="success-text"><i class="fas fa-unlock"></i> Vault Decrypted! Access Granted.</p>
+                      <div class="vault-download-links">
+                        <div class="vault-link-item">
+                          <span>Shivam_Resume.pdf</span>
+                          <div class="vault-btns">
+                            <a href="assets/resume.pdf" target="_blank" class="t-btn-outline"><i class="fas fa-eye"></i> View</a>
+                            <a href="assets/resume.pdf" class="t-btn-primary" download><i class="fas fa-download"></i> Download</a>
+                          </div>
+                        </div>
+                        <div class="vault-link-item">
+                          <span>Shivam_CV.pdf</span>
+                          <div class="vault-btns">
+                            <a href="assets/cv.pdf" target="_blank" class="t-btn-outline"><i class="fas fa-eye"></i> View</a>
+                            <a href="assets/cv.pdf" class="t-btn-primary" download><i class="fas fa-download"></i> Download</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div id="ide-vault-locked">
+                      <p class="warning-text"><i class="fas fa-shield-alt"></i> Authentication required. Enter passcode:</p>
+                      <div class="vault-auth-box">
+                        <input type="password" id="ide-vault-passcode" placeholder="Enter key (default: shivam0000)" />
+                        <button id="ide-vault-decrypt-btn" class="t-btn-primary">Decrypt</button>
+                      </div>
+                      <p id="ide-vault-error" class="error-text" style="display: none;"></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PANE 6: CONTACT (SH) -->
+              <div class="editor-pane" id="pane-contact">
+                <div class="code-view">
+                  <div class="code-line"><span class="c-comment">#!/bin/bash</span></div>
+                  <div class="code-line"><span class="c-comment"># Script to dispatch email payload to Shivam</span></div>
+                  <div class="code-line"><span class="c-keyword">echo</span> <span class="c-string">"Initializing SMTP client..."</span></div>
+                </div>
+
+                <div class="pane-rendered-preview">
+                  <div class="preview-title"><i class="fas fa-paper-plane"></i> SHELL PAYLOAD TRANSMITTER (CONTACT)</div>
+                  <div class="terminal-contact-widget">
+                    <form id="ide-contact-form" class="t-contact-form">
+                      <div class="form-row">
+                        <label>USER_NAME=</label>
+                        <input type="text" id="ide-contact-name" placeholder="\"Your Name\"" required />
+                      </div>
+                      <div class="form-row">
+                        <label>USER_EMAIL=</label>
+                        <input type="email" id="ide-contact-email" placeholder="\"user@domain.com\"" required />
+                      </div>
+                      <div class="form-row">
+                        <label>MESSAGE_BODY=</label>
+                        <textarea id="ide-contact-msg" placeholder="\"Type your message here...\"" rows="3" required></textarea>
+                      </div>
+                      <button type="submit" class="t-btn-primary"><i class="fas fa-paper-plane"></i> bash send_message.sh</button>
+                      <div id="ide-contact-status" class="status-msg"></div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- IDE Status Bar -->
+      <div class="ide-statusbar">
+        <div class="status-left">
+          <span class="status-branch"><i class="fas fa-code-branch"></i> main</span>
+          <span class="status-sync"><i class="fas fa-sync"></i> IDE-Workspace: Active</span>
+        </div>
+        <div class="status-right">
+          <span>UTF-8</span>
+          <span>Ln 1, Col 1</span>
+          <span>shivam.dev</span>
+        </div>
+      </div>
+    </div>
+
     <script src="script.js"></script>
   </body>
 </html>

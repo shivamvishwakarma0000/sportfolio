@@ -736,4 +736,134 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // ==========================================
+    // Fullscreen Terminal IDE Workspace Logic
+    // ==========================================
+    const treeNodes = document.querySelectorAll('.tree-node.file');
+    const editorTabs = document.querySelectorAll('.editor-tab');
+    const editorPanes = document.querySelectorAll('.editor-pane');
+    
+    function selectFile(fileName) {
+        // Update Explorer File Tree
+        treeNodes.forEach(node => {
+            if (node.dataset.file === fileName) {
+                node.classList.add('active');
+            } else {
+                node.classList.remove('active');
+            }
+        });
+
+        // Update Editor Tabs
+        editorTabs.forEach(tab => {
+            if (tab.dataset.file === fileName) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+
+        // Update Editor Viewport Panes
+        editorPanes.forEach(pane => {
+            if (pane.id === `pane-${fileName}`) {
+                pane.classList.add('active');
+            } else {
+                pane.classList.remove('active');
+            }
+        });
+    }
+
+    // Bind explorer nodes click
+    treeNodes.forEach(node => {
+        node.addEventListener('click', () => {
+            selectFile(node.dataset.file);
+        });
+    });
+
+    // Bind editor tabs click
+    editorTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            selectFile(tab.dataset.file);
+        });
+    });
+
+    // Terminal IDE Actions
+    const ideExitBtn = document.getElementById('ide-exit-btn');
+    if (ideExitBtn) {
+        ideExitBtn.addEventListener('click', () => {
+            applyStyle('clay'); // Switch back to Claymorphic mode
+        });
+    }
+
+    const idePaletteBtn = document.getElementById('ide-palette-btn');
+    if (idePaletteBtn && themeOptions) {
+        idePaletteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            themeOptions.classList.toggle('active');
+        });
+    }
+
+    // Terminal Document Decryption Vault
+    const ideVaultLocked = document.getElementById('ide-vault-locked');
+    const ideVaultUnlocked = document.getElementById('ide-vault-unlocked');
+    const ideVaultPasscode = document.getElementById('ide-vault-passcode');
+    const ideVaultDecryptBtn = document.getElementById('ide-vault-decrypt-btn');
+    const ideVaultError = document.getElementById('ide-vault-error');
+
+    if (ideVaultDecryptBtn && ideVaultPasscode) {
+        ideVaultDecryptBtn.addEventListener('click', () => {
+            const pass = ideVaultPasscode.value;
+            if (pass === 'shivam0000') {
+                ideVaultLocked.style.display = 'none';
+                ideVaultUnlocked.style.display = 'block';
+                // Sync with main vault session
+                sessionStorage.setItem('vaultUnlocked', 'true');
+                if (vaultFoldersArea && vaultLockScreen) {
+                    vaultLockScreen.style.display = 'none';
+                    vaultFoldersArea.classList.add('active');
+                }
+            } else {
+                ideVaultError.textContent = 'ACCESS DENIED: Invalid Security Key';
+                ideVaultError.style.display = 'block';
+                ideVaultPasscode.classList.add('shake');
+                setTimeout(() => ideVaultPasscode.classList.remove('shake'), 500);
+            }
+        });
+    }
+
+    // Sync decryption on load
+    if (sessionStorage.getItem('vaultUnlocked') === 'true') {
+        if (ideVaultLocked && ideVaultUnlocked) {
+            ideVaultLocked.style.display = 'none';
+            ideVaultUnlocked.style.display = 'block';
+        }
+    }
+
+    // Terminal Contact form bash execution simulation
+    const ideContactForm = document.getElementById('ide-contact-form');
+    const ideContactStatus = document.getElementById('ide-contact-status');
+    
+    if (ideContactForm) {
+        ideContactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            ideContactStatus.textContent = 'bash: send_message.sh: SMTP Connecting...';
+            ideContactStatus.style.color = 'var(--primary-color)';
+            
+            // Sync content to main contact form fields
+            const mainName = document.getElementById('name');
+            const mainEmail = document.getElementById('email');
+            const mainMsg = document.getElementById('message');
+            
+            if (mainName) mainName.value = document.getElementById('ide-contact-name').value;
+            if (mainEmail) mainEmail.value = document.getElementById('ide-contact-email').value;
+            if (mainMsg) mainMsg.value = document.getElementById('ide-contact-msg').value;
+
+            // Trigger SMTP dispatch mockup
+            setTimeout(() => {
+                ideContactStatus.textContent = 'bash: send_message.sh: SMTP Success (Message Transmitted)';
+                ideContactStatus.style.color = '#2ec4b6';
+                ideContactForm.reset();
+            }, 1200);
+        });
+    }
 });
