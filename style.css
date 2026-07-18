@@ -2543,20 +2543,75 @@ body.style-terminal .section-title::before {
     opacity: 0.8;
 }
 
-/* Cards transformed into terminal console windows */
-body.style-terminal .glass-card,
-body.style-terminal .hero-big-frame,
-body.style-terminal .contact-wrapper {
-    background: rgba(10, 12, 16, 0.96) !important;
-    border: 1px solid rgba(var(--primary-rgb), 0.35) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(var(--primary-rgb), 0.1) !important;
-    padding-top: 3.2rem !important;
+/* Prompt before section titles responsive prefix override */
+@media (max-width: 576px) {
+    body.style-terminal .section-title::before {
+        content: '$ ' !important;
+    }
+}
+
+/* Cards transformed into high-fidelity IDE Code Editors */
+body.style-terminal .glass-card {
+    background: rgba(10, 12, 16, 0.97) !important;
+    border: 1px solid rgba(var(--primary-rgb), 0.3) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(var(--primary-rgb), 0.08) !important;
+    padding: 4.2rem 1.8rem 1.8rem 4.5rem !important; /* spacing left for editor line numbers column */
     position: relative !important;
     overflow: hidden !important;
 }
 
-body.style-terminal .glass-card::before,
+body.style-terminal .glass-card::before {
+    content: "01\n02\n03\n04\n05\n06\n07\n08\n09\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20" !important;
+    white-space: pre !important;
+    position: absolute !important;
+    top: 4.2rem !important;
+    left: 1rem !important;
+    width: 2.2rem !important;
+    font-family: 'Share Tech Mono', monospace !important;
+    font-size: 0.8rem !important;
+    line-height: 1.85 !important;
+    color: rgba(var(--primary-rgb), 0.25) !important;
+    text-align: right !important;
+    border-right: 1px solid rgba(var(--primary-rgb), 0.15) !important;
+    padding-right: 0.6rem !important;
+    height: calc(100% - 5.5rem) !important;
+    overflow: hidden !important;
+    display: block !important;
+    background: none !important;
+    border-bottom: none !important;
+}
+
+body.style-terminal .glass-card::after {
+    content: "index.html  ×   style.css  ×   main.js" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 32px !important;
+    background: rgba(18, 22, 30, 0.95) !important;
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.15) !important;
+    font-family: 'Share Tech Mono', monospace !important;
+    font-size: 0.7rem !important;
+    line-height: 32px !important;
+    color: rgba(var(--primary-rgb), 0.6) !important;
+    padding-left: 1.2rem !important;
+    letter-spacing: 1px !important;
+    display: block !important;
+}
+
+/* Terminal window frames for Hero and Contact wrappers (no line numbers) */
+body.style-terminal .hero-big-frame,
+body.style-terminal .contact-wrapper {
+    background: rgba(10, 12, 16, 0.97) !important;
+    border: 1px solid rgba(var(--primary-rgb), 0.3) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(var(--primary-rgb), 0.08) !important;
+    padding-top: 3.8rem !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
 body.style-terminal .hero-big-frame::before,
 body.style-terminal .contact-wrapper::before {
     content: '' !important;
@@ -2564,23 +2619,42 @@ body.style-terminal .contact-wrapper::before {
     top: 0 !important;
     left: 0 !important;
     width: 100% !important;
-    height: 28px !important;
-    background: rgba(255, 255, 255, 0.04) !important;
-    border-bottom: 1px solid rgba(var(--primary-rgb), 0.2) !important;
+    height: 32px !important;
+    background: rgba(18, 22, 30, 0.95) !important;
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.15) !important;
     display: block !important;
 }
 
-body.style-terminal .glass-card::after,
 body.style-terminal .hero-big-frame::after,
 body.style-terminal .contact-wrapper::after {
-    content: '● ● ●' !important;
+    content: '● ● ●  terminal' !important;
     position: absolute !important;
-    top: 6px !important;
-    left: 15px !important;
-    font-size: 0.75rem !important;
-    letter-spacing: 2px !important;
-    color: rgba(var(--primary-rgb), 0.6) !important;
+    top: 0 !important;
+    left: 1.2rem !important;
+    font-family: 'Share Tech Mono', monospace !important;
+    font-size: 0.72rem !important;
+    line-height: 32px !important;
+    color: rgba(var(--primary-rgb), 0.5) !important;
     display: block !important;
+    letter-spacing: 1px !important;
+    text-transform: lowercase !important;
+}
+
+/* Mobile Adjustments to avoid text wrapping and overlapping */
+@media (max-width: 576px) {
+    body.style-terminal .glass-card {
+        padding: 3.5rem 1.2rem 1.2rem 1.2rem !important; /* normal paddings to prevent squeezing text */
+    }
+    body.style-terminal .glass-card::before {
+        display: none !important; /* hide line numbers column */
+    }
+    body.style-terminal .glass-card::after {
+        content: "main.js" !important; /* simplify file tabs */
+    }
+    body.style-terminal .hero-big-frame,
+    body.style-terminal .contact-wrapper {
+        padding-top: 3.2rem !important;
+    }
 }
 
 body.style-terminal .theme-customizer-panel {
