@@ -8,10 +8,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeOptions = document.getElementById('theme-options');
+    const colorDots = document.querySelectorAll('.color-dot');
+    const bgDots = document.querySelectorAll('.bg-dot');
+    const fontOptions = document.querySelectorAll('.font-option');
     
     if (hamburger && navLinks) {
         hamburger.addEventListener('click', () => {
             navLinks.classList.toggle('active');
+            
+            // Close theme options if mobile menu is opened
+            if (navLinks.classList.contains('active') && themeOptions) {
+                themeOptions.classList.remove('active');
+            }
             
             // Toggle hamburger icon from ellipsis (3-dots) to times (X)
             const icon = hamburger.querySelector('i');
@@ -38,6 +48,115 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // ==========================================
+    // Customizer Settings Panel (Colors, Backgrounds, Fonts)
+    // ==========================================
+    const themeClasses = ['theme-gold', 'theme-blue', 'theme-green', 'theme-purple', 'theme-rose'];
+    const bgClasses = ['bg-default', 'bg-oceanic', 'bg-nocturne', 'bg-nebula', 'bg-cyberpunk'];
+    const fontClasses = ['font-outfit', 'font-grotesque', 'font-jakarta', 'font-fira', 'font-playfair'];
+
+    // 1. Accent Color logic
+    const savedTheme = localStorage.getItem('portfolio-theme') || 'gold';
+    applyTheme(savedTheme);
+    
+    function applyTheme(themeName) {
+        themeClasses.forEach(c => document.body.classList.remove(c));
+        document.body.classList.add(`theme-${themeName}`);
+        localStorage.setItem('portfolio-theme', themeName);
+        colorDots.forEach(dot => {
+            if (dot.dataset.theme === themeName) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+    }
+
+    // 2. Background Style logic
+    const savedBg = localStorage.getItem('portfolio-bg') || 'default';
+    applyBackground(savedBg);
+
+    function applyBackground(bgName) {
+        bgClasses.forEach(c => document.body.classList.remove(c));
+        document.body.classList.add(`bg-${bgName}`);
+        localStorage.setItem('portfolio-bg', bgName);
+        bgDots.forEach(dot => {
+            if (dot.dataset.bg === bgName) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+    }
+
+    // 3. Typography Font logic
+    let savedFont = localStorage.getItem('portfolio-font') || 'outfit';
+    if (savedFont === 'syne') {
+        savedFont = 'jakarta';
+    }
+    applyFont(savedFont);
+
+    function applyFont(fontName) {
+        fontClasses.forEach(c => document.body.classList.remove(c));
+        document.body.classList.add(`font-${fontName}`);
+        localStorage.setItem('portfolio-font', fontName);
+        fontOptions.forEach(opt => {
+            if (opt.dataset.font === fontName) {
+                opt.classList.add('active');
+            } else {
+                opt.classList.remove('active');
+            }
+        });
+    }
+    
+    // Toggle the theme customizer options panel
+    if (themeToggle && themeOptions) {
+        themeToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            themeOptions.classList.toggle('active');
+            
+            // Close mobile menu if theme options open
+            if (themeOptions.classList.contains('active') && navLinks) {
+                navLinks.classList.remove('active');
+                // Restore hamburger icon
+                const icon = hamburger.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-ellipsis-v');
+                }
+            }
+        });
+    }
+    
+    // Bind click handlers
+    colorDots.forEach(dot => {
+        dot.addEventListener('click', (e) => {
+            e.stopPropagation();
+            applyTheme(dot.dataset.theme);
+        });
+    });
+
+    bgDots.forEach(dot => {
+        dot.addEventListener('click', (e) => {
+            e.stopPropagation();
+            applyBackground(dot.dataset.bg);
+        });
+    });
+
+    fontOptions.forEach(opt => {
+        opt.addEventListener('click', (e) => {
+            e.stopPropagation();
+            applyFont(opt.dataset.font);
+        });
+    });
+    
+    // Close theme options panel if clicked outside
+    document.addEventListener('click', (e) => {
+        if (themeOptions && !themeOptions.contains(e.target) && e.target !== themeToggle) {
+            themeOptions.classList.remove('active');
+        }
+    });
 
     // ==========================================
     // Interactive Constellation Node Background
@@ -91,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Subtle theme colors
             const colors = [
-                'rgba(255, 183, 3, 0.4)',  // Gold
+                'primary',                 // Gold / Blue dynamically
                 'rgba(46, 196, 182, 0.4)', // Teal
                 'rgba(139, 92, 246, 0.4)'  // Violet
             ];
@@ -123,7 +242,21 @@ document.addEventListener('DOMContentLoaded', () => {
         draw() {
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-            ctx.fillStyle = this.color;
+            if (this.color === 'primary') {
+                let fillStyle = 'rgba(255, 183, 3, 0.4)'; // Default Gold
+                if (document.body.classList.contains('theme-blue')) {
+                    fillStyle = 'rgba(0, 210, 255, 0.4)';
+                } else if (document.body.classList.contains('theme-green')) {
+                    fillStyle = 'rgba(0, 245, 212, 0.4)';
+                } else if (document.body.classList.contains('theme-purple')) {
+                    fillStyle = 'rgba(189, 83, 237, 0.4)';
+                } else if (document.body.classList.contains('theme-rose')) {
+                    fillStyle = 'rgba(255, 51, 102, 0.4)';
+                }
+                ctx.fillStyle = fillStyle;
+            } else {
+                ctx.fillStyle = this.color;
+            }
             ctx.fill();
         }
     }
@@ -155,7 +288,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 if (dist < mouse.radius) {
                     const alpha = (1 - dist / mouse.radius) * 0.25;
-                    ctx.strokeStyle = `rgba(255, 183, 3, ${alpha})`;
+                    let strokeColor = `rgba(255, 183, 3, ${alpha})`; // Default Gold
+                    if (document.body.classList.contains('theme-blue')) {
+                        strokeColor = `rgba(0, 210, 255, ${alpha})`;
+                    } else if (document.body.classList.contains('theme-green')) {
+                        strokeColor = `rgba(0, 245, 212, ${alpha})`;
+                    } else if (document.body.classList.contains('theme-purple')) {
+                        strokeColor = `rgba(189, 83, 237, ${alpha})`;
+                    } else if (document.body.classList.contains('theme-rose')) {
+                        strokeColor = `rgba(255, 51, 102, ${alpha})`;
+                    }
+                    ctx.strokeStyle = strokeColor;
                     ctx.lineWidth = 1;
                     ctx.beginPath();
                     ctx.moveTo(p1.x, p1.y);

@@ -91,6 +91,43 @@
       <div class="hamburger">
         <i class="fas fa-ellipsis-v"></i>
       </div>
+      <div class="theme-container">
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Customizer Panel">
+          <i class="fas fa-palette"></i>
+        </button>
+        <div id="theme-options" class="theme-customizer-panel">
+          <div class="customizer-section">
+            <h4>Accent Color</h4>
+            <div class="color-options">
+              <button class="color-dot gold active" data-theme="gold" style="background-color: #ffb703;" title="Gold"></button>
+              <button class="color-dot blue" data-theme="blue" style="background-color: #00d2ff;" title="Neon Blue"></button>
+              <button class="color-dot green" data-theme="green" style="background-color: #00f5d4;" title="Emerald"></button>
+              <button class="color-dot purple" data-theme="purple" style="background-color: #bd53ed;" title="Violet"></button>
+              <button class="color-dot rose" data-theme="rose" style="background-color: #ff3366;" title="Rose"></button>
+            </div>
+          </div>
+          <div class="customizer-section">
+            <h4>Background</h4>
+            <div class="bg-options">
+              <button class="bg-dot default active" data-bg="default" style="background: radial-gradient(circle, #0d0924 0%, #020105 100%);" title="Default Space"></button>
+              <button class="bg-dot oceanic" data-bg="oceanic" style="background: radial-gradient(circle, #0a1128 0%, #000814 100%);" title="Deep Oceanic"></button>
+              <button class="bg-dot nocturne" data-bg="nocturne" style="background: radial-gradient(circle, #041f1e 0%, #08100d 100%);" title="Forest Nocturne"></button>
+              <button class="bg-dot nebula" data-bg="nebula" style="background: radial-gradient(circle, #240b36 0%, #0b001a 100%);" title="Purple Nebula"></button>
+              <button class="bg-dot cyberpunk" data-bg="cyberpunk" style="background: radial-gradient(circle, #2d0015 0%, #090003 100%);" title="Cyberpunk Noir"></button>
+            </div>
+          </div>
+          <div class="customizer-section">
+            <h4>Typography</h4>
+            <div class="font-options">
+              <button class="font-option active" data-font="outfit">Outfit</button>
+              <button class="font-option" data-font="grotesque">Grotesk</button>
+              <button class="font-option" data-font="jakarta">Jakarta</button>
+              <button class="font-option" data-font="fira">Fira</button>
+              <button class="font-option" data-font="playfair">Playfair</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </header>
 
     <main>
@@ -1187,7 +1224,7 @@
                   >
                   <a
                     href="assets/resume.pdf"
-                    class="btn-outline"
+                    class="btn-primary"
                     download
                     style="
                       padding: 0.6rem 1.2rem;
@@ -1265,7 +1302,7 @@
                   >
                   <a
                     href="assets/cv.pdf"
-                    class="btn-outline"
+                    class="btn-primary"
                     download
                     style="
                       padding: 0.6rem 1.2rem;
