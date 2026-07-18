@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const colorDots = document.querySelectorAll('.color-dot');
     const bgDots = document.querySelectorAll('.bg-dot');
     const fontOptions = document.querySelectorAll('.font-option');
+    const styleOptions = document.querySelectorAll('.style-option');
     
     if (hamburger && navLinks) {
         hamburger.addEventListener('click', () => {
@@ -55,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeClasses = ['theme-gold', 'theme-blue', 'theme-green', 'theme-purple', 'theme-rose'];
     const bgClasses = ['bg-default', 'bg-oceanic', 'bg-nocturne', 'bg-nebula', 'bg-cyberpunk'];
     const fontClasses = ['font-outfit', 'font-grotesque', 'font-jakarta', 'font-fira', 'font-playfair'];
+    const styleClasses = ['style-clay', 'style-terminal'];
 
     // 1. Accent Color logic
     const savedTheme = localStorage.getItem('portfolio-theme') || 'gold';
@@ -109,6 +111,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // 4. Interface Mode logic
+    const savedStyle = localStorage.getItem('portfolio-style') || 'clay';
+    applyStyle(savedStyle);
+
+    function applyStyle(styleName) {
+        styleClasses.forEach(c => document.body.classList.remove(c));
+        document.body.classList.add(`style-${styleName}`);
+        localStorage.setItem('portfolio-style', styleName);
+        styleOptions.forEach(opt => {
+            if (opt.dataset.style === styleName) {
+                opt.classList.add('active');
+            } else {
+                opt.classList.remove('active');
+            }
+        });
+    }
     
     // Toggle the theme customizer options panel
     if (themeToggle && themeOptions) {
@@ -148,6 +167,13 @@ document.addEventListener('DOMContentLoaded', () => {
         opt.addEventListener('click', (e) => {
             e.stopPropagation();
             applyFont(opt.dataset.font);
+        });
+    });
+
+    styleOptions.forEach(opt => {
+        opt.addEventListener('click', (e) => {
+            e.stopPropagation();
+            applyStyle(opt.dataset.style);
         });
     });
     

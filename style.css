@@ -2477,6 +2477,146 @@ h1, h2, h3, h4, h5 {
     box-shadow: 0 0 10px var(--primary-glow);
 }
 
+.style-options {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.style-option {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    padding: 0.4rem 0;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: 'Outfit', sans-serif;
+    text-align: center;
+    font-weight: 600;
+}
+
+.style-option:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text-primary);
+}
+
+.style-option.active {
+    background: var(--primary-color);
+    color: #080a10;
+    border-color: transparent;
+    font-weight: 700;
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* Terminal IDE Interface Overrides */
+body.style-terminal {
+    --font-heading: 'Share Tech Mono', monospace;
+    --font-body: 'Share Tech Mono', monospace;
+    --font-display: 'Share Tech Mono', monospace;
+}
+
+/* CRT Scanline Overlay */
+body.style-terminal::after {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    z-index: 9999;
+    background-size: 100% 4px, 6px 100%;
+    pointer-events: none;
+    opacity: 0.12;
+}
+
+/* Prompt before section titles */
+body.style-terminal .section-title::before {
+    content: 'shivam@developer:~$ ';
+    color: var(--primary-color);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: normal;
+    text-transform: none;
+    opacity: 0.8;
+}
+
+/* Cards transformed into terminal console windows */
+body.style-terminal .glass-card,
+body.style-terminal .hero-big-frame,
+body.style-terminal .contact-wrapper {
+    background: rgba(10, 12, 16, 0.96) !important;
+    border: 1px solid rgba(var(--primary-rgb), 0.35) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(var(--primary-rgb), 0.1) !important;
+    padding-top: 3.2rem !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+body.style-terminal .glass-card::before,
+body.style-terminal .hero-big-frame::before,
+body.style-terminal .contact-wrapper::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 28px !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.2) !important;
+    display: block !important;
+}
+
+body.style-terminal .glass-card::after,
+body.style-terminal .hero-big-frame::after,
+body.style-terminal .contact-wrapper::after {
+    content: '● ● ●' !important;
+    position: absolute !important;
+    top: 6px !important;
+    left: 15px !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 2px !important;
+    color: rgba(var(--primary-rgb), 0.6) !important;
+    display: block !important;
+}
+
+body.style-terminal .theme-customizer-panel {
+    background: rgba(18, 22, 32, 0.98) !important;
+    border: 1px solid rgba(var(--primary-rgb), 0.4) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Terminal Buttons */
+body.style-terminal .btn-primary,
+body.style-terminal .btn-outline,
+body.style-terminal .hero-cta,
+body.style-terminal .resume-mini-btn,
+body.style-terminal .vault-lock-btn,
+body.style-terminal .vault-btn {
+    border-radius: 6px !important;
+    font-family: var(--font-mono) !important;
+    border: 1px solid var(--primary-color) !important;
+    background: transparent !important;
+    color: var(--primary-color) !important;
+    box-shadow: none !important;
+    text-shadow: 0 0 4px var(--primary-glow) !important;
+    transition: all 0.25s ease !important;
+}
+
+body.style-terminal .btn-primary:hover,
+body.style-terminal .hero-cta:hover,
+body.style-terminal .resume-mini-btn:hover,
+body.style-terminal .vault-lock-btn:hover,
+body.style-terminal .vault-btn:hover {
+    background: var(--primary-color) !important;
+    color: #080a10 !important;
+    box-shadow: 0 0 12px var(--primary-glow) !important;
+}
+
 /* Theme Color Variable Overrides */
 body.theme-gold {
     --primary-color: #ffb703;
