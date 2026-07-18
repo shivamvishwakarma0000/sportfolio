@@ -688,7 +688,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const password = vaultPasswordInput.value;
             
-            if (password === '@Shivam0000') {
+            if (password === PASSCODE) {
                 // Correct Password
                 vaultErrorMsg.classList.remove('active');
                 unlockVault();
@@ -841,7 +841,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     
                     newConfirm.addEventListener('click', () => {
-                        if (passInput.value === '@Shivam0000') {
+                        if (passInput.value === PASSCODE) {
                             // Password correct, proceed with deletion
                             const fileToDelete = vaultDatabase[folderKey][idx];
                             vaultDatabase[folderKey].splice(idx, 1);
@@ -1050,7 +1050,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ideVaultDecryptBtn && ideVaultPasscode) {
         ideVaultDecryptBtn.addEventListener('click', () => {
             const pass = ideVaultPasscode.value;
-            if (pass === '@Shivam0000') {
+            if (pass === PASSCODE) {
                 ideVaultLocked.style.display = 'none';
                 ideVaultUnlocked.style.display = 'block';
                 // Sync with main vault session
@@ -1125,7 +1125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Feedback & Personal Space Locker System
     // ==========================================
 
-    const PASSCODE = '@Shivam0000';
+    let PASSCODE = localStorage.getItem('shivMasterPassword') || PASSCODE;
     let isUnlocked = false;
     let notes = [];
     let feedbacks = [];
@@ -1763,6 +1763,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const category = noteCategoryInput.value;
             const content = noteContentInput.value.trim();
             const theme = pdfThemeSelect.value;
+            const font = document.getElementById('f-journal-font').value;
             
             if (!title || !content) {
                 alert('Please fill out the Title and Content before saving to your Journal.');
@@ -1777,6 +1778,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 title,
                 category,
                 theme,
+                font,
                 htmlContent,
                 date: currentDate,
                 rawContent: content
@@ -1817,54 +1819,131 @@ document.addEventListener('DOMContentLoaded', () => {
         
         savedJournals.forEach((journal, index) => {
             const journalCard = document.createElement('div');
-            // We use the same theme classes used for the poster!
             journalCard.className = `pdf-poster-container theme-${journal.theme}`;
-            journalCard.style.position = 'relative'; // Override absolute
-            journalCard.style.width = '100%'; // Fit container
-            journalCard.style.height = 'auto'; // Auto height
+            journalCard.style.position = 'relative';
+            journalCard.style.width = '100%';
+            journalCard.style.height = 'auto';
             journalCard.style.marginBottom = '1.5rem';
-            journalCard.style.transform = 'none'; // reset any scaling
+            journalCard.style.transform = 'none';
             journalCard.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
             journalCard.style.borderRadius = '12px';
             journalCard.style.overflow = 'hidden';
             
+            // Apply Font
+            if (journal.font) {
+                journalCard.style.fontFamily = journal.font;
+            }
+            
             journalCard.innerHTML = `
                 <div class="poster-frame" style="padding: 1.5rem;">
-                    <div class="poster-header" style="margin-bottom: 1rem;">
+                    <div class="poster-header" style="margin-bottom: 1rem; align-items: center;">
                         <span class="poster-badge">${journal.category}</span>
-                        <button class="delete-journal-btn btn-outline" data-id="${journal.id}" style="padding: 4px 8px; font-size: 0.8rem; color: #ff5555; border-color: rgba(255,50,50,0.3); background: transparent; cursor: pointer; border-radius: 4px;"><i class="fas fa-trash"></i></button>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="minimize-journal-btn btn-outline" style="padding: 4px 8px; font-size: 0.8rem; background: transparent; cursor: pointer; border-radius: 4px; border: 1px solid rgba(255,255,255,0.3); color: #fff;" title="Minimize/Expand"><i class="fas fa-compress"></i></button>
+                            <button class="download-journal-btn btn-outline" style="padding: 4px 8px; font-size: 0.8rem; background: transparent; cursor: pointer; border-radius: 4px; border: 1px solid rgba(0,200,255,0.3); color: #00d2ff;" title="Download as Image"><i class="fas fa-download"></i></button>
+                            <button class="delete-journal-btn btn-outline" data-id="${journal.id}" style="padding: 4px 8px; font-size: 0.8rem; color: #ff5555; border-color: rgba(255,50,50,0.3); background: transparent; cursor: pointer; border-radius: 4px;" title="Delete Journal"><i class="fas fa-trash"></i></button>
+                        </div>
                     </div>
-                    <div class="poster-body">
-                        <div class="poster-content-card" style="padding: 1rem;">
+                    <div class="poster-body journal-body-content" style="transition: max-height 0.3s ease;">
+                        <div class="poster-content-card" style="padding: 1rem; background: rgba(255,255,255,0.05);">
                             <h1 class="poster-title" style="margin-top:0; margin-bottom:1rem; font-size:1.5rem; line-height:1.2;">${journal.title}</h1>
                             <div class="poster-content-text" style="font-size: 0.9rem;">${journal.htmlContent}</div>
                         </div>
                     </div>
-                    <div class="poster-footer" style="margin-top: 1rem; padding-top: 1rem;">
+                    <div class="poster-footer" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
                         <span class="poster-date">Saved on ${journal.date}</span>
                     </div>
                 </div>
             `;
             
             journalsContainer.appendChild(journalCard);
+            
+            // Minimize Logic
+            const minBtn = journalCard.querySelector('.minimize-journal-btn');
+            const bodyContent = journalCard.querySelector('.journal-body-content');
+            let isMinimized = false;
+            minBtn.addEventListener('click', () => {
+                isMinimized = !isMinimized;
+                if (isMinimized) {
+                    bodyContent.style.maxHeight = '0px';
+                    bodyContent.style.overflow = 'hidden';
+                    minBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                } else {
+                    bodyContent.style.maxHeight = 'none';
+                    minBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                }
+            });
+            
+            // Download Image Logic
+            const dlBtn = journalCard.querySelector('.download-journal-btn');
+            dlBtn.addEventListener('click', () => {
+                // Ensure expanded before screenshot
+                bodyContent.style.maxHeight = 'none';
+                minBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                isMinimized = false;
+                
+                const originalBorder = journalCard.style.borderRadius;
+                journalCard.style.borderRadius = '0'; // better for screenshot
+                
+                dlBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                
+                html2canvas(journalCard, { scale: 2, useCORS: true, backgroundColor: null }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `Journal_${journal.title.replace(/\s+/g, '_')}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    dlBtn.innerHTML = '<i class="fas fa-download"></i>';
+                    journalCard.style.borderRadius = originalBorder;
+                }).catch(err => {
+                    console.error("Image generation failed", err);
+                    dlBtn.innerHTML = '<i class="fas fa-download"></i>';
+                    alert('Download failed.');
+                });
+            });
         });
         
-        // Delete Listeners
+        // Delete Listeners using Custom Modal
         journalsContainer.querySelectorAll('.delete-journal-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const id = e.currentTarget.getAttribute('data-id');
-                const password = prompt("Enter passcode to delete this journal:");
-                if (password === '@Shivam0000') {
-                    savedJournals = savedJournals.filter(j => j.id !== id);
-                    localStorage.setItem('shivSavedJournals', JSON.stringify(savedJournals));
-                    renderSavedJournals();
-                } else if (password !== null) {
-                    alert("Incorrect Password!");
+                
+                const deleteModal = document.getElementById('vault-delete-modal');
+                const passInput = document.getElementById('vault-delete-password-input');
+                const confirmBtn = document.getElementById('vault-delete-confirm');
+                const cancelBtn = document.getElementById('vault-delete-cancel');
+                const errorMsg = document.getElementById('vault-delete-error');
+                
+                if (deleteModal) {
+                    deleteModal.style.display = 'flex';
+                    passInput.value = '';
+                    errorMsg.style.display = 'none';
+                    passInput.focus();
+                    
+                    const newConfirm = confirmBtn.cloneNode(true);
+                    confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+                    const newCancel = cancelBtn.cloneNode(true);
+                    cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+                    
+                    newCancel.addEventListener('click', () => {
+                        deleteModal.style.display = 'none';
+                    });
+                    
+                    newConfirm.addEventListener('click', () => {
+                        if (passInput.value === PASSCODE) {
+                            savedJournals = savedJournals.filter(j => j.id !== id);
+                            localStorage.setItem('shivSavedJournals', JSON.stringify(savedJournals));
+                            deleteModal.style.display = 'none';
+                            renderSavedJournals();
+                        } else {
+                            errorMsg.style.display = 'block';
+                            passInput.value = '';
+                            passInput.focus();
+                        }
+                    });
                 }
             });
         });
     }
-
     // Simple markdown-to-html helper for PDF layout rendering
     function markdownToHTML(mdText) {
         if (!mdText) return '';
@@ -1895,4 +1974,26 @@ document.addEventListener('DOMContentLoaded', () => {
         
         return html;
     }
-});
+
+    const btnResetPassword = document.getElementById('btn-reset-password');
+    if (btnResetPassword) {
+        btnResetPassword.addEventListener('click', () => {
+            const currentPass = prompt("Enter current Master Password:");
+            if (currentPass === PASSCODE) {
+                const newPass = prompt("Enter NEW Master Password:");
+                if (newPass && newPass.trim() !== '') {
+                    PASSCODE = newPass.trim();
+                    localStorage.setItem('shivMasterPassword', PASSCODE);
+                    
+                    // Re-encrypt existing data
+                    if (notes.length > 0) saveNotesToStorage();
+                    if (feedbacks.length > 0) saveFeedbacksToStorage();
+                    
+                    alert("Master Password successfully updated! Your secure vault is now locked with the new password.");
+                }
+            } else if (currentPass !== null) {
+                alert("Incorrect password!");
+            }
+        });
+    }
+}); // End of DOMContentLoaded

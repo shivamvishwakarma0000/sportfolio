@@ -2530,9 +2530,12 @@
                 </button>
               </form>
               <div class="panel-divider"><span>OR</span></div>
-              <div class="admin-access-section">
+              <div class="admin-access-section" style="display: flex; flex-direction: column; gap: 10px;">
                 <button id="feedback-go-admin-btn" class="f-btn-outline">
                   <i class="fas fa-shield-alt"></i> Access Personal Locker & Logs
+                </button>
+                <button id="btn-reset-password" class="f-btn-outline" style="border-color: rgba(255,100,100,0.5); color: #ff8888; font-size: 0.8rem; padding: 5px;">
+                  <i class="fas fa-key"></i> Reset Master Password
                 </button>
               </div>
             </div>
@@ -2592,8 +2595,8 @@
                     </button>
                   </div>
 
-                  <div class="pdf-export-row" style="margin-top: 1rem; padding: 1rem; background: rgba(0,200,255,0.05); border: 1px solid rgba(0,200,255,0.2); border-radius: 12px;">
-                    <div class="form-group" style="margin-bottom: 0; flex-grow: 1;">
+                  <div class="pdf-export-row" style="margin-top: 1rem; padding: 1rem; background: rgba(0,200,255,0.05); border: 1px solid rgba(0,200,255,0.2); border-radius: 12px; display: flex; flex-wrap: wrap; gap: 10px;">
+                    <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 150px;">
                       <label for="f-pdf-theme">Journal Theme</label>
                       <select id="f-pdf-theme" class="f-select">
                         <option value="neon-dark">Neon Dark (Cyberpunk)</option>
@@ -2602,7 +2605,16 @@
                         <option value="emerald-glass">Emerald Glass</option>
                       </select>
                     </div>
-                    <button type="button" id="f-btn-generate-pdf" class="f-btn-success" style="background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);">
+                    <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 150px;">
+                      <label for="f-journal-font">Font Style</label>
+                      <select id="f-journal-font" class="f-select">
+                        <option value="'Outfit', sans-serif">Modern (Outfit)</option>
+                        <option value="'Playfair Display', serif">Elegant (Serif)</option>
+                        <option value="'Courier New', monospace">Typewriter (Mono)</option>
+                        <option value="'Dancing Script', cursive">Handwritten (Cursive)</option>
+                      </select>
+                    </div>
+                    <button type="button" id="f-btn-generate-pdf" class="f-btn-success" style="background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); flex-basis: 100%; margin-top: 5px;">
                       <i class="fas fa-book"></i> Save to Journal
                     </button>
                   </div>
