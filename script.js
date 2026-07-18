@@ -620,6 +620,38 @@ document.addEventListener('DOMContentLoaded', () => {
             { name: 'Transfer_Certificate_School.pdf', size: '950 KB', date: '15/07/2023', type: 'pdf', url: 'assets/Transfer_Certificate_School.pdf' }
         ]
     };
+    
+    // ----------------------------------------------------
+    // DYNAMIC VAULT DATA STORAGE (LocalStorage)
+    // ----------------------------------------------------
+    let customVaultFolders = JSON.parse(localStorage.getItem('shivCustomFolders')) || [];
+    let customVaultFiles = JSON.parse(localStorage.getItem('shivCustomFiles')) || {};
+    
+    // Merge custom files into vaultDatabase
+    for (const key in customVaultFiles) {
+        if (!vaultDatabase[key]) vaultDatabase[key] = [];
+        vaultDatabase[key] = vaultDatabase[key].concat(customVaultFiles[key]);
+    }
+
+    const foldersGrid = document.querySelector('.folders-grid');
+    const addNewFolderBtn = document.getElementById('add-new-folder-btn');
+    
+    // Render custom folders to DOM
+    if (foldersGrid && addNewFolderBtn) {
+        customVaultFolders.forEach(folder => {
+            const folderCard = document.createElement('div');
+            folderCard.className = 'folder-card reveal active';
+            folderCard.setAttribute('data-folder', folder.key);
+            folderCard.innerHTML = `
+                <div class="folder-icon-wrapper">
+                  <i class="fas fa-folder folder-icon"></i>
+                  <span class="folder-badge"><i class="fas fa-shield-halved"></i></span>
+                </div>
+                <span class="folder-name">${folder.name}</span>
+            `;
+            foldersGrid.insertBefore(folderCard, addNewFolderBtn);
+        });
+    }
 
     // Helper functions for lock/unlock
     function unlockVault() {
@@ -679,47 +711,137 @@ document.addEventListener('DOMContentLoaded', () => {
         lockVaultBtn.addEventListener('click', lockVault);
     }
 
-    // Folder Grid Click Event
-    const folders = document.querySelectorAll('.folder-card');
-    folders.forEach(folder => {
-        folder.addEventListener('click', () => {
-            const folderKey = folder.getAttribute('data-folder');
-            const folderNameText = folder.querySelector('.folder-name').textContent;
-            const files = vaultDatabase[folderKey];
+    // Folder Grid Click Event (Event Delegation for dynamic folders)
+    let currentActiveFolderKey = null;
+
+    if (foldersGrid) {
+        foldersGrid.addEventListener('click', (e) => {
+            const folderCard = e.target.closest('.folder-card');
             
-            if (files) {
-                // Set Modal Title
-                vaultModalFolderTitle.textContent = folderNameText;
-                
-                // Populate File Items
-                vaultFilesList.innerHTML = '';
-                files.forEach(file => {
-                    const fileItem = document.createElement('div');
-                    fileItem.className = 'file-item';
+            // Handle Add New Folder
+            if (folderCard && folderCard.id === 'add-new-folder-btn') {
+                const folderName = prompt('Enter new folder name:');
+                if (folderName && folderName.trim()) {
+                    const cleanName = folderName.trim();
+                    const folderKey = 'custom_' + cleanName.toLowerCase().replace(/[^a-z0-9]/g, '_');
                     
-                    const fileIconClass = file.type === 'pdf' ? 'fa-file-pdf pdf' : 'fa-file-image image';
+                    if (!vaultDatabase[folderKey]) {
+                        vaultDatabase[folderKey] = [];
+                    }
                     
-                    fileItem.innerHTML = `
-                        <div class="file-info">
-                            <i class="fas ${fileIconClass} file-icon"></i>
-                            <div class="file-details">
-                                <span class="file-name">${file.name}</span>
-                                <span class="file-meta">${file.size} &bull; ${file.date}</span>
-                            </div>
+                    // Save to local storage
+                    customVaultFolders.push({ key: folderKey, name: cleanName });
+                    localStorage.setItem('shivCustomFolders', JSON.stringify(customVaultFolders));
+                    
+                    // Render in DOM
+                    const newFolderCard = document.createElement('div');
+                    newFolderCard.className = 'folder-card reveal active';
+                    newFolderCard.setAttribute('data-folder', folderKey);
+                    newFolderCard.innerHTML = `
+                        <div class="folder-icon-wrapper">
+                          <i class="fas fa-folder folder-icon"></i>
+                          <span class="folder-badge"><i class="fas fa-shield-halved"></i></span>
                         </div>
-                        <div class="file-actions">
-                            <a href="${file.url}" target="_blank" class="btn btn-outline file-btn"><i class="fas fa-eye"></i> View</a>
-                            <a href="${file.url}" download="${file.name}" class="btn btn-primary file-btn"><i class="fas fa-download"></i> Download</a>
-                        </div>
+                        <span class="folder-name">${cleanName}</span>
                     `;
-                    vaultFilesList.appendChild(fileItem);
-                });
+                    foldersGrid.insertBefore(newFolderCard, addNewFolderBtn);
+                }
+                return;
+            }
+
+            // Handle Normal Folder Click
+            if (folderCard && folderCard.hasAttribute('data-folder')) {
+                const folderKey = folderCard.getAttribute('data-folder');
+                const folderNameText = folderCard.querySelector('.folder-name').textContent;
                 
-                // Open Modal
+                currentActiveFolderKey = folderKey;
+                vaultModalFolderTitle.textContent = folderNameText;
+                renderVaultFiles(folderKey);
                 vaultModal.classList.add('active');
             }
         });
-    });
+    }
+
+    function renderVaultFiles(folderKey) {
+        const files = vaultDatabase[folderKey] || [];
+        vaultFilesList.innerHTML = '';
+        
+        if (files.length === 0) {
+            vaultFilesList.innerHTML = '<p style="text-align:center; color: rgba(255,255,255,0.5); padding: 2rem;">Folder is empty</p>';
+            return;
+        }
+
+        files.forEach(file => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            
+            const fileIconClass = (file.type === 'pdf' || file.name.toLowerCase().endsWith('.pdf')) ? 'fa-file-pdf pdf' : 'fa-file-image image';
+            
+            fileItem.innerHTML = `
+                <div class="file-info">
+                    <i class="fas ${fileIconClass} file-icon"></i>
+                    <div class="file-details">
+                        <span class="file-name">${file.name}</span>
+                        <span class="file-meta">${file.size} &bull; ${file.date}</span>
+                    </div>
+                </div>
+                <div class="file-actions">
+                    <a href="${file.url}" target="_blank" class="btn btn-outline file-btn" style="text-decoration:none;"><i class="fas fa-eye"></i> View</a>
+                    <a href="${file.url}" download="${file.name}" class="btn btn-primary file-btn" style="text-decoration:none;"><i class="fas fa-download"></i> Download</a>
+                </div>
+            `;
+            vaultFilesList.appendChild(fileItem);
+        });
+    }
+
+    // Handle File Upload dynamically
+    const vaultFileUpload = document.getElementById('vault-file-upload');
+    if (vaultFileUpload) {
+        vaultFileUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file || !currentActiveFolderKey) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const base64Data = event.target.result;
+                const fileType = file.type.includes('pdf') ? 'pdf' : 'image';
+                const fileSizeStr = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                const currentDate = new Date().toLocaleDateString('en-GB');
+
+                const newFile = {
+                    name: file.name,
+                    size: fileSizeStr,
+                    date: currentDate,
+                    type: fileType,
+                    url: base64Data
+                };
+
+                // Add to memory
+                if (!vaultDatabase[currentActiveFolderKey]) vaultDatabase[currentActiveFolderKey] = [];
+                vaultDatabase[currentActiveFolderKey].push(newFile);
+
+                // Add to Local Storage
+                if (!customVaultFiles[currentActiveFolderKey]) customVaultFiles[currentActiveFolderKey] = [];
+                customVaultFiles[currentActiveFolderKey].push(newFile);
+                
+                try {
+                    localStorage.setItem('shivCustomFiles', JSON.stringify(customVaultFiles));
+                } catch(e) {
+                    alert('Storage limit exceeded! Cannot save this file.');
+                    vaultDatabase[currentActiveFolderKey].pop();
+                    customVaultFiles[currentActiveFolderKey].pop();
+                    return;
+                }
+
+                // Re-render
+                renderVaultFiles(currentActiveFolderKey);
+            };
+            reader.readAsDataURL(file);
+            
+            // Reset input
+            e.target.value = '';
+        });
+    }
 
     // Close Modal Event
     if (vaultModalClose) {
@@ -1579,17 +1701,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             
-            // Append securely behind the page (so the user doesn't see it, but html2canvas sees it perfectly)
+            // On Safari, elements with negative z-index or hidden from viewport often get discarded from rendering tree.
+            // We fix this by placing it at the very top of the page with a positive z-index, but we hide it 
+            // from the user by placing a full-screen loading overlay over it with an even higher z-index!
             posterDiv.style.position = 'absolute';
             posterDiv.style.top = '0';
             posterDiv.style.left = '0';
-            posterDiv.style.zIndex = '-100';
+            posterDiv.style.zIndex = '999998'; 
             posterDiv.style.pointerEvents = 'none';
             // Force A4 size
             posterDiv.style.width = '794px';
             posterDiv.style.height = '1123px';
             
+            // Create Loading Screen Overlay
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.style.position = 'fixed';
+            loadingOverlay.style.top = '0';
+            loadingOverlay.style.left = '0';
+            loadingOverlay.style.width = '100vw';
+            loadingOverlay.style.height = '100vh';
+            loadingOverlay.style.backgroundColor = 'rgba(10, 14, 23, 0.98)';
+            loadingOverlay.style.zIndex = '999999';
+            loadingOverlay.style.display = 'flex';
+            loadingOverlay.style.flexDirection = 'column';
+            loadingOverlay.style.alignItems = 'center';
+            loadingOverlay.style.justifyContent = 'center';
+            loadingOverlay.style.color = '#fff';
+            loadingOverlay.style.backdropFilter = 'blur(10px)';
+            loadingOverlay.innerHTML = `
+                <i class="fas fa-circle-notch fa-spin" style="font-size:3rem; margin-bottom:1.5rem; color: #00d2ff;"></i>
+                <h2 style="font-family: 'Outfit', sans-serif; font-weight: 500;">Generating High-Quality PDF...</h2>
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 0.5rem;">Please wait a moment</p>
+            `;
+            
             document.body.appendChild(posterDiv);
+            document.body.appendChild(loadingOverlay);
             
             const opt = {
                 margin:       0,
@@ -1608,19 +1754,22 @@ document.addEventListener('DOMContentLoaded', () => {
             btnGeneratePdf.disabled = true;
             btnGeneratePdf.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rendering PDF...';
             
+            // Wait 250ms for fonts to load and the browser to paint the new element
             setTimeout(() => {
                 html2pdf().set(opt).from(posterDiv).save().then(() => {
                     document.body.removeChild(posterDiv);
+                    document.body.removeChild(loadingOverlay);
                     btnGeneratePdf.disabled = false;
                     btnGeneratePdf.innerHTML = '<i class="fas fa-file-pdf"></i> Save Poster PDF';
                 }).catch(err => {
                     console.error("PDF generation failed", err);
                     document.body.removeChild(posterDiv);
+                    document.body.removeChild(loadingOverlay);
                     btnGeneratePdf.disabled = false;
                     btnGeneratePdf.innerHTML = '<i class="fas fa-file-pdf"></i> Save Poster PDF';
                     alert('PDF generation failed. Check console for details.');
                 });
-            }, 100);
+            }, 300);
         });
     }
 

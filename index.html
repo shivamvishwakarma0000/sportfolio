@@ -1552,6 +1552,14 @@
                 </div>
                 <span class="folder-name">TC</span>
               </div>
+              
+              <!-- Add New Folder Button -->
+              <div class="folder-card reveal add-new-folder-btn" id="add-new-folder-btn" style="border: 1px dashed rgba(255,255,255,0.3); background: transparent;">
+                <div class="folder-icon-wrapper">
+                  <i class="fas fa-plus folder-icon" style="color: rgba(255,255,255,0.5);"></i>
+                </div>
+                <span class="folder-name" style="color: rgba(255,255,255,0.7);">Add Folder</span>
+              </div>
             </div>
           </div>
         </div>
@@ -1565,9 +1573,15 @@
               <i class="fas fa-folder-open title-icon"></i>
               <h3 id="vault-modal-folder-title">Folder Name</h3>
             </div>
-            <button id="vault-modal-close" class="vault-modal-close-btn">
-              <i class="fas fa-times"></i>
-            </button>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <label for="vault-file-upload" class="t-btn-primary" style="cursor: pointer; padding: 5px 12px; font-size: 0.8rem; margin: 0;">
+                <i class="fas fa-upload"></i> Upload
+              </label>
+              <input type="file" id="vault-file-upload" style="display: none;" accept="image/*,application/pdf" />
+              <button id="vault-modal-close" class="vault-modal-close-btn">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
           </div>
           <div class="vault-modal-body">
             <div class="vault-files-list" id="vault-files-list">
