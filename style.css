@@ -4499,6 +4499,10 @@ body.style-terminal .terminal-workspace {
         border-radius: 20px;
     }
     
+    .feedback-modal-content {
+        flex-direction: column;
+    }
+    
     .feedback-sidebar {
         width: 100%;
         height: auto;
