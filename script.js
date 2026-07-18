@@ -1554,41 +1554,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            // Build dynamic element for rendering
+            // Build a very simple, lightweight DOM element for PDF that works reliably on mobile phones
             const posterDiv = document.createElement('div');
-            posterDiv.id = 'temp-pdf-poster';
-            posterDiv.className = `pdf-poster-container theme-${theme}`;
             
             const htmlContent = markdownToHTML(content);
             const currentDate = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
             
+            // Simple plain-text-style layout (no huge CSS backgrounds that crash iOS Safari)
             posterDiv.innerHTML = `
-                <div class="poster-frame">
-                    <div class="poster-header">
-                        <span class="poster-badge">${category}</span>
-                        <span style="font-weight:800; letter-spacing:1px; font-size:1.1rem;"><i class="fas fa-shield-alt" style="color:inherit; margin-right:8px;"></i>SHIVAM LOCKER</span>
+                <div style="font-family: Arial, sans-serif; padding: 30px; color: #000; background: #fff;">
+                    <div style="border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+                        <h1 style="margin: 0 0 5px 0; font-size: 26px; color: #000;">${title}</h1>
+                        <p style="margin: 0; font-size: 14px; color: #555;">
+                            <strong>Category:</strong> ${category} &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Date:</strong> ${currentDate}
+                        </p>
                     </div>
-                    <div class="poster-body">
-                        <div class="poster-content-card">
-                            <h1 class="poster-title" style="margin-top:0; margin-bottom:1.5rem; font-size:2.2rem; line-height:1.2;">${title}</h1>
-                            <div class="poster-content-text">${htmlContent}</div>
-                        </div>
+                    <div style="font-size: 14px; line-height: 1.6; color: #111;">
+                        ${htmlContent}
                     </div>
-                    <div class="poster-footer">
-                        <span class="poster-date">Generated on ${currentDate}</span>
-                        <span class="poster-signature" style="font-style:italic;">Shivam Personal Space</span>
+                    <div style="margin-top: 50px; border-top: 1px solid #ccc; padding-top: 15px; font-size: 11px; color: #888; text-align: center;">
+                        Shivam Personal Space - Secure Document
                     </div>
                 </div>
             `;
             
-            // Temporarily append to body (needed by html2pdf to capture style)
+            // Append off-screen
+            posterDiv.style.position = 'absolute';
+            posterDiv.style.left = '-9999px';
+            posterDiv.style.top = '-9999px';
+            posterDiv.style.width = '794px'; // A4 width at 96 DPI
             document.body.appendChild(posterDiv);
             
             const opt = {
-                margin:       0,
+                margin:       10,
                 filename:     `Shivam_${category}_${title.toLowerCase().replace(/\s+/g, '_')}.pdf`,
-                image:        { type: 'jpeg', quality: 1.0 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false },
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, logging: false, windowWidth: 800 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             
@@ -1597,7 +1598,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             setTimeout(() => {
                 html2pdf().set(opt).from(posterDiv).save().then(() => {
-                    // Remove temporary element
                     document.body.removeChild(posterDiv);
                     btnGeneratePdf.disabled = false;
                     btnGeneratePdf.innerHTML = '<i class="fas fa-file-pdf"></i> Save Poster PDF';
@@ -1608,7 +1608,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     btnGeneratePdf.innerHTML = '<i class="fas fa-file-pdf"></i> Save Poster PDF';
                     alert('PDF generation failed. Check console for details.');
                 });
-            }, 250);
+            }, 100);
         });
     }
 
