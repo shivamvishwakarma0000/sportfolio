@@ -742,7 +742,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     const consoleBody = document.getElementById('terminal-console-body');
     const navTabs = document.querySelectorAll('.terminal-nav-tabs .editor-tab');
-    const sections = document.querySelectorAll('.terminal-section');
+    const terminalSections = document.querySelectorAll('.terminal-section');
 
     if (consoleBody && navTabs.length > 0) {
         // Clicks scroll to section
@@ -767,7 +767,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let currentSectionId = '';
             const containerTop = consoleBody.getBoundingClientRect().top;
             
-            sections.forEach(sec => {
+            terminalSections.forEach(sec => {
                 const rect = sec.getBoundingClientRect();
                 // If section top is near container top or above it
                 if (rect.top - containerTop <= 150) {
