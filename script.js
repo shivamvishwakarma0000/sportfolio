@@ -813,7 +813,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ideVaultDecryptBtn && ideVaultPasscode) {
         ideVaultDecryptBtn.addEventListener('click', () => {
             const pass = ideVaultPasscode.value;
-            if (pass === 'shivam0000') {
+            if (pass === '@Shivam0000') {
                 ideVaultLocked.style.display = 'none';
                 ideVaultUnlocked.style.display = 'block';
                 // Sync with main vault session

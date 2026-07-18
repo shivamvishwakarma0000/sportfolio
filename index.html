@@ -1646,6 +1646,14 @@
               <i class="fas fa-table file-csv-icon"></i>
               <span>experience.csv</span>
             </div>
+            <div class="tree-node file" data-file="profiles">
+              <i class="fas fa-link file-json-icon"></i>
+              <span>profiles.json</span>
+            </div>
+            <div class="tree-node file" data-file="workshops">
+              <i class="fas fa-chalkboard-teacher file-csv-icon"></i>
+              <span>workshops.yaml</span>
+            </div>
             <div class="tree-node file" data-file="vault">
               <i class="fas fa-key file-key-icon"></i>
               <span>document_vault.key</span>
@@ -1676,6 +1684,14 @@
             <div class="editor-tab" data-file="experience">
               <i class="fas fa-table file-csv-icon"></i>
               <span>experience.csv</span>
+            </div>
+            <div class="editor-tab" data-file="profiles">
+              <i class="fas fa-link file-json-icon"></i>
+              <span>profiles.json</span>
+            </div>
+            <div class="editor-tab" data-file="workshops">
+              <i class="fas fa-chalkboard-teacher file-csv-icon"></i>
+              <span>workshops.yaml</span>
             </div>
             <div class="editor-tab" data-file="vault">
               <i class="fas fa-key file-key-icon"></i>
@@ -1720,10 +1736,8 @@
                   <div class="preview-title"><i class="fas fa-play"></i> LIVE RENDERED PROFILE VIEW</div>
                   <div class="terminal-bio-card">
                     <div class="terminal-avatar-wrapper">
-                      <!-- Render profile picture or icon -->
-                      <div class="terminal-avatar-box">
-                        <i class="fas fa-user-cog"></i>
-                      </div>
+                      <!-- Render actual profile picture -->
+                      <img src="assets/profile.png" alt="Shivam Profile" class="terminal-avatar-img" />
                     </div>
                     <div class="terminal-bio-text">
                       <h3>Shivam Vishwakarma</h3>
@@ -1748,11 +1762,13 @@
                   <div class="code-line">&nbsp;&nbsp;{</div>
                   <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">"name"</span>: <span class="c-string">"SmartVision"</span>,</div>
                   <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">"sub"</span>: <span class="c-string">"Selfie Smart Attendance"</span>,</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">"image"</span>: <span class="c-string">"assets/project-smartvision.png"</span>,</div>
                   <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">"url"</span>: <span class="c-string">"https://shivam8858-smart-vision.hf.space"</span></div>
                   <div class="code-line">&nbsp;&nbsp;},</div>
                   <div class="code-line">&nbsp;&nbsp;{</div>
                   <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">"name"</span>: <span class="c-string">"PrepGuardian"</span>,</div>
                   <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">"sub"</span>: <span class="c-string">"Digital Subedar"</span>,</div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">"image"</span>: <span class="c-string">"assets/project-prepguardian.png"</span>,</div>
                   <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">"url"</span>: <span class="c-string">"https://prepguardian.netlify.app"</span></div>
                   <div class="code-line">&nbsp;&nbsp;}</div>
                   <div class="code-line">]</div>
@@ -1764,16 +1780,22 @@
                     <!-- Project 1 -->
                     <div class="terminal-project-card">
                       <div class="card-bar"><span>SmartVision</span></div>
+                      <div class="terminal-image-container">
+                        <img src="assets/project-smartvision.png" alt="SmartVision" />
+                      </div>
                       <div class="card-body">
                         <p class="terminal-sub">Selfie Smart Attendance</p>
                         <p class="desc">A Flask-based AI portal utilizing facial recognition technology for automated, accurate, and seamless attendance tracking.</p>
-                        <div class="tags"><span>Python</span><span>Flask</span><span>OpenCV</span></div>
+                        <div class="tags"><span>Python</span><span>Flask</span><span>OpenCV</span><span>AI/ML</span></div>
                         <a href="https://shivam8858-smart-vision.hf.space" target="_blank" class="t-project-link">View Project <i class="fas fa-external-link-alt"></i></a>
                       </div>
                     </div>
                     <!-- Project 2 -->
                     <div class="terminal-project-card">
                       <div class="card-bar"><span>PrepGuardian</span></div>
+                      <div class="terminal-image-container">
+                        <img src="assets/project-prepguardian.png" alt="PrepGuardian" />
+                      </div>
                       <div class="card-body">
                         <p class="terminal-sub">Digital Subedar</p>
                         <p class="desc">An AI-powered discipline enforcement tool and study assistant designed specifically for competitive exam preparation.</p>
@@ -1784,6 +1806,9 @@
                     <!-- Project 3 -->
                     <div class="terminal-project-card">
                       <div class="card-bar"><span>AI Fitness Tracker</span></div>
+                      <div class="terminal-image-container">
+                        <img src="assets/project-fitnesstracker.png" alt="AI Fitness Tracker" onerror="this.src='https://placehold.co/320x180/050810/d4af37?text=Fitness+Tracker'; this.style.opacity='0.4';" />
+                      </div>
                       <div class="card-body">
                         <p class="terminal-sub">AI Pose Analysis</p>
                         <p class="desc">Developed during internship. An intelligent tracker that analyzes user movement and provides real-time fitness insights.</p>
@@ -1859,7 +1884,109 @@
                 </div>
               </div>
 
-              <!-- PANE 5: VAULT (KEY) -->
+              <!-- PANE 5: PROFILES (JSON) -->
+              <div class="editor-pane" id="pane-profiles">
+                <div class="code-view">
+                  <div class="code-line">{</div>
+                  <div class="code-line">&nbsp;&nbsp;<span class="c-key">"geeksforgeeks"</span>: <span class="c-string">"vishshi2i7q"</span>,</div>
+                  <div class="code-line">&nbsp;&nbsp;<span class="c-key">"leetcode"</span>: <span class="c-string">"shivamvishwakarma"</span>,</div>
+                  <div class="code-line">&nbsp;&nbsp;<span class="c-key">"hackerrank"</span>: <span class="c-string">"vishshivam16"</span>,</div>
+                  <div class="code-line">&nbsp;&nbsp;<span class="c-key">"codeforces"</span>: <span class="c-string">"vishshivam16"</span></div>
+                  <div class="code-line">}</div>
+                </div>
+
+                <div class="pane-rendered-preview">
+                  <div class="preview-title"><i class="fas fa-external-link-alt"></i> CONNECTED DEVELOPER LOGS</div>
+                  <div class="terminal-projects-grid">
+                    <div class="terminal-project-card">
+                      <div class="card-bar"><span>GeeksforGeeks</span></div>
+                      <div class="card-body" style="text-align: center; padding: 1.5rem 1rem;">
+                        <i class="fas fa-code" style="font-size: 2.2rem; color: var(--primary-color); margin-bottom: 0.8rem;"></i>
+                        <h4 style="color:#fff; margin-bottom: 0.8rem;">GeeksforGeeks</h4>
+                        <a href="https://www.geeksforgeeks.org/profile/vishshi2i7q" target="_blank" class="t-btn-primary" style="justify-content: center; width: 100%;">Open Profile</a>
+                      </div>
+                    </div>
+                    <div class="terminal-project-card">
+                      <div class="card-bar"><span>LeetCode</span></div>
+                      <div class="card-body" style="text-align: center; padding: 1.5rem 1rem;">
+                        <i class="fas fa-terminal" style="font-size: 2.2rem; color: var(--primary-color); margin-bottom: 0.8rem;"></i>
+                        <h4 style="color:#fff; margin-bottom: 0.8rem;">LeetCode</h4>
+                        <a href="https://leetcode.com/u/shivamvishwakarma/" target="_blank" class="t-btn-primary" style="justify-content: center; width: 100%;">Open Profile</a>
+                      </div>
+                    </div>
+                    <div class="terminal-project-card">
+                      <div class="card-bar"><span>HackerRank</span></div>
+                      <div class="card-body" style="text-align: center; padding: 1.5rem 1rem;">
+                        <i class="fab fa-hackerrank" style="font-size: 2.2rem; color: var(--primary-color); margin-bottom: 0.8rem;"></i>
+                        <h4 style="color:#fff; margin-bottom: 0.8rem;">HackerRank</h4>
+                        <a href="https://www.hackerrank.com/profile/vishshivam16" target="_blank" class="t-btn-primary" style="justify-content: center; width: 100%;">Open Profile</a>
+                      </div>
+                    </div>
+                    <div class="terminal-project-card">
+                      <div class="card-bar"><span>Codeforces</span></div>
+                      <div class="card-body" style="text-align: center; padding: 1.5rem 1rem;">
+                        <i class="fas fa-chart-bar" style="font-size: 2.2rem; color: var(--primary-color); margin-bottom: 0.8rem;"></i>
+                        <h4 style="color:#fff; margin-bottom: 0.8rem;">Codeforces</h4>
+                        <a href="https://codeforces.com/profile/vishshivam16" target="_blank" class="t-btn-primary" style="justify-content: center; width: 100%;">Open Profile</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PANE 6: WORKSHOPS (YAML) -->
+              <div class="editor-pane" id="pane-workshops">
+                <div class="code-view">
+                  <div class="code-line"><span class="c-key">workshops</span>:</div>
+                  <div class="code-line">&nbsp;&nbsp;- <span class="c-key">title</span>: <span class="c-string">"Application of AI/ML Model for Specific Crop Acreage Mapping"</span></div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">org</span>: <span class="c-string">"ISRO"</span></div>
+                  <div class="code-line">&nbsp;&nbsp;- <span class="c-key">title</span>: <span class="c-string">"Design Smarter: A UX Masterclass with Figma"</span></div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">org</span>: <span class="c-string">"Parul University"</span></div>
+                  <div class="code-line">&nbsp;&nbsp;- <span class="c-key">title</span>: <span class="c-string">"Bring AI to Work Workshop"</span></div>
+                  <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-key">org</span>: <span class="c-string">"Google Workspace"</span></div>
+                </div>
+
+                <div class="pane-rendered-preview">
+                  <div class="preview-title"><i class="fas fa-award"></i> CERTIFICATION DECK</div>
+                  <div class="terminal-projects-grid">
+                    <!-- Cert 1 -->
+                    <div class="terminal-project-card">
+                      <div class="card-bar"><span>ISRO</span></div>
+                      <div class="terminal-image-container">
+                        <img src="assets/cert-isro.png" alt="ISRO Certificate" />
+                      </div>
+                      <div class="card-body">
+                        <h4 style="color:#fff; font-size:0.9rem; margin-bottom:0.5rem;">Application of AI/ML Model for Crop Acreage Mapping</h4>
+                        <p class="role-badge" style="margin-bottom:0;">ISRO (Indian Space Research Organisation)</p>
+                      </div>
+                    </div>
+                    <!-- Cert 2 -->
+                    <div class="terminal-project-card">
+                      <div class="card-bar"><span>Figma UX</span></div>
+                      <div class="terminal-image-container">
+                        <img src="assets/cert-figma.png" alt="Figma UX Certificate" />
+                      </div>
+                      <div class="card-body">
+                        <h4 style="color:#fff; font-size:0.9rem; margin-bottom:0.5rem;">Design Smarter: A UX Masterclass with Figma</h4>
+                        <p class="role-badge" style="margin-bottom:0;">Parul University</p>
+                      </div>
+                    </div>
+                    <!-- Cert 3 -->
+                    <div class="terminal-project-card">
+                      <div class="card-bar"><span>Google Workspace</span></div>
+                      <div class="terminal-image-container">
+                        <img src="assets/cert-google-workspace.png" alt="Google Workspace Certificate" />
+                      </div>
+                      <div class="card-body">
+                        <h4 style="color:#fff; font-size:0.9rem; margin-bottom:0.5rem;">Bring AI to Work Workshop</h4>
+                        <p class="role-badge" style="margin-bottom:0;">Google Workspace</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PANE 7: VAULT (KEY) -->
               <div class="editor-pane" id="pane-vault">
                 <div class="code-view">
                   <div class="code-line"><span class="c-keyword">const</span> secureKey = <span class="c-string">"DECRYPTION_KEYS_REQUIRED"</span>;</div>
@@ -1872,18 +1999,62 @@
                     <div id="ide-vault-unlocked" style="display: none;">
                       <p class="success-text"><i class="fas fa-unlock"></i> Vault Decrypted! Access Granted.</p>
                       <div class="vault-download-links">
-                        <div class="vault-link-item">
-                          <span>Shivam_Resume.pdf</span>
-                          <div class="vault-btns">
-                            <a href="assets/resume.pdf" target="_blank" class="t-btn-outline"><i class="fas fa-eye"></i> View</a>
-                            <a href="assets/resume.pdf" class="t-btn-primary" download><i class="fas fa-download"></i> Download</a>
+                        <!-- Folder: Resume -->
+                        <div class="terminal-vault-folder">
+                          <div class="folder-header"><i class="fas fa-folder-open text-primary"></i> resume</div>
+                          <div class="vault-link-item">
+                            <span>Shivam_Resume.pdf</span>
+                            <div class="vault-btns">
+                              <a href="assets/resume.pdf" target="_blank" class="t-btn-outline"><i class="fas fa-eye"></i> View</a>
+                              <a href="assets/resume.pdf" class="t-btn-primary" download><i class="fas fa-download"></i> Download</a>
+                            </div>
                           </div>
                         </div>
-                        <div class="vault-link-item">
-                          <span>Shivam_CV.pdf</span>
-                          <div class="vault-btns">
-                            <a href="assets/cv.pdf" target="_blank" class="t-btn-outline"><i class="fas fa-eye"></i> View</a>
-                            <a href="assets/cv.pdf" class="t-btn-primary" download><i class="fas fa-download"></i> Download</a>
+                        <!-- Folder: CV -->
+                        <div class="terminal-vault-folder" style="margin-top: 10px;">
+                          <div class="folder-header"><i class="fas fa-folder-open text-primary"></i> cv</div>
+                          <div class="vault-link-item">
+                            <span>Shivam_CV.pdf</span>
+                            <div class="vault-btns">
+                              <a href="assets/cv.pdf" target="_blank" class="t-btn-outline"><i class="fas fa-eye"></i> View</a>
+                              <a href="assets/cv.pdf" class="t-btn-primary" download><i class="fas fa-download"></i> Download</a>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Folder: Certificates -->
+                        <div class="terminal-vault-folder" style="margin-top: 10px;">
+                          <div class="folder-header"><i class="fas fa-folder-open text-primary"></i> certificates</div>
+                          <div class="vault-link-item">
+                            <span>ISRO_Certificate.pdf</span>
+                            <div class="vault-btns">
+                              <a href="assets/cert-isro.png" target="_blank" class="t-btn-outline"><i class="fas fa-eye"></i> View</a>
+                              <a href="assets/cert-isro.png" class="t-btn-primary" download><i class="fas fa-download"></i> Download</a>
+                            </div>
+                          </div>
+                          <div class="vault-link-item" style="margin-top: 4px;">
+                            <span>Figma_Certificate.pdf</span>
+                            <div class="vault-btns">
+                              <a href="assets/cert-figma.png" target="_blank" class="t-btn-outline"><i class="fas fa-eye"></i> View</a>
+                              <a href="assets/cert-figma.png" class="t-btn-primary" download><i class="fas fa-download"></i> Download</a>
+                            </div>
+                          </div>
+                          <div class="vault-link-item" style="margin-top: 4px;">
+                            <span>Google_Workspace_Certificate.pdf</span>
+                            <div class="vault-btns">
+                              <a href="assets/cert-google-workspace.png" target="_blank" class="t-btn-outline"><i class="fas fa-eye"></i> View</a>
+                              <a href="assets/cert-google-workspace.png" class="c-keyword" style="text-decoration:none;" download><i class="fas fa-download"></i> Download</a>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Folder: Transcripts -->
+                        <div class="terminal-vault-folder" style="margin-top: 10px;">
+                          <div class="folder-header"><i class="fas fa-folder-open text-primary"></i> transcripts</div>
+                          <div class="vault-link-item">
+                            <span>Academic_Transcript.pdf</span>
+                            <div class="vault-btns">
+                              <a href="assets/resume.pdf" target="_blank" class="t-btn-outline"><i class="fas fa-eye"></i> View</a>
+                              <a href="assets/resume.pdf" class="t-btn-primary" download><i class="fas fa-download"></i> Download</a>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -1892,7 +2063,7 @@
                     <div id="ide-vault-locked">
                       <p class="warning-text"><i class="fas fa-shield-alt"></i> Authentication required. Enter passcode:</p>
                       <div class="vault-auth-box">
-                        <input type="password" id="ide-vault-passcode" placeholder="Enter key (default: shivam0000)" />
+                        <input type="password" id="ide-vault-passcode" placeholder="Enter Access Password" />
                         <button id="ide-vault-decrypt-btn" class="t-btn-primary">Decrypt</button>
                       </div>
                       <p id="ide-vault-error" class="error-text" style="display: none;"></p>
@@ -1901,7 +2072,7 @@
                 </div>
               </div>
 
-              <!-- PANE 6: CONTACT (SH) -->
+              <!-- PANE 8: CONTACT (SH) -->
               <div class="editor-pane" id="pane-contact">
                 <div class="code-view">
                   <div class="code-line"><span class="c-comment">#!/bin/bash</span></div>
