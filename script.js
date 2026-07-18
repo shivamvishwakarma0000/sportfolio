@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // ==========================================
+    // MASTER PASSWORD — must be at top so all code below can access it
+    // ==========================================
+    let PASSCODE = localStorage.getItem('shivMasterPassword') || '@Shivam0000';
     
     // Set Current Year in Footer
     document.getElementById('year').textContent = new Date().getFullYear();
@@ -1125,7 +1129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Feedback & Personal Space Locker System
     // ==========================================
 
-    let PASSCODE = localStorage.getItem('shivMasterPassword') || PASSCODE;
+    // PASSCODE is already declared at the top of DOMContentLoaded — no re-declaration needed
     let isUnlocked = false;
     let notes = [];
     let feedbacks = [];
@@ -1930,8 +1934,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     newConfirm.addEventListener('click', () => {
                         if (passInput.value === PASSCODE) {
-                            savedJournals = savedJournals.filter(j => j.id !== id);
-                            localStorage.setItem('shivSavedJournals', JSON.stringify(savedJournals));
+                            // Re-read from localStorage (not stale local var) and delete
+                            let currentJournals = JSON.parse(localStorage.getItem('shivSavedJournals')) || [];
+                            currentJournals = currentJournals.filter(j => j.id !== id);
+                            localStorage.setItem('shivSavedJournals', JSON.stringify(currentJournals));
                             deleteModal.style.display = 'none';
                             renderSavedJournals();
                         } else {
@@ -1978,22 +1984,80 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnResetPassword = document.getElementById('btn-reset-password');
     if (btnResetPassword) {
         btnResetPassword.addEventListener('click', () => {
-            const currentPass = prompt("Enter current Master Password:");
-            if (currentPass === PASSCODE) {
-                const newPass = prompt("Enter NEW Master Password:");
-                if (newPass && newPass.trim() !== '') {
-                    PASSCODE = newPass.trim();
-                    localStorage.setItem('shivMasterPassword', PASSCODE);
-                    
-                    // Re-encrypt existing data
-                    if (notes.length > 0) saveNotesToStorage();
-                    if (feedbacks.length > 0) saveFeedbacksToStorage();
-                    
-                    alert("Master Password successfully updated! Your secure vault is now locked with the new password.");
+            // Show a beautiful in-page reset modal instead of ugly browser prompts
+            const existingModal = document.getElementById('reset-password-modal');
+            if (existingModal) existingModal.remove();
+            
+            const resetModal = document.createElement('div');
+            resetModal.id = 'reset-password-modal';
+            resetModal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+            resetModal.innerHTML = `
+                <div style="background:linear-gradient(135deg,#0d1117,#1a1f2e);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:2rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.7);">
+                    <h3 style="color:#fff;margin-bottom:0.3rem;font-size:1.2rem;"><i class="fas fa-key" style="color:#ffb703;"></i> Reset Master Password</h3>
+                    <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:1.5rem;">This password protects your notes, vault, and all encrypted data.</p>
+                    <div style="display:flex;flex-direction:column;gap:1rem;">
+                        <input type="password" id="rp-current" placeholder="Current Password" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:0.8rem 1rem;color:#fff;width:100%;box-sizing:border-box;font-size:1rem;" />
+                        <input type="password" id="rp-new" placeholder="New Password" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:0.8rem 1rem;color:#fff;width:100%;box-sizing:border-box;font-size:1rem;" />
+                        <input type="password" id="rp-confirm" placeholder="Confirm New Password" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:0.8rem 1rem;color:#fff;width:100%;box-sizing:border-box;font-size:1rem;" />
+                        <p id="rp-error" style="color:#ff5555;font-size:0.85rem;margin:0;display:none;"><i class="fas fa-exclamation-circle"></i> <span id="rp-error-msg">Incorrect current password.</span></p>
+                        <div style="display:flex;gap:0.7rem;">
+                            <button id="rp-cancel" style="flex:1;padding:0.8rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:10px;color:rgba(255,255,255,0.7);cursor:pointer;font-size:0.95rem;">Cancel</button>
+                            <button id="rp-confirm-btn" style="flex:2;padding:0.8rem;background:linear-gradient(135deg,#ffb703,#d4af37);border:none;border-radius:10px;color:#000;font-weight:700;cursor:pointer;font-size:0.95rem;"><i class="fas fa-shield-halved"></i> Update Password</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(resetModal);
+            document.getElementById('rp-current').focus();
+            
+            document.getElementById('rp-cancel').addEventListener('click', () => resetModal.remove());
+            resetModal.addEventListener('click', (e) => { if (e.target === resetModal) resetModal.remove(); });
+            
+            document.getElementById('rp-confirm-btn').addEventListener('click', () => {
+                const currentPass = document.getElementById('rp-current').value;
+                const newPass = document.getElementById('rp-new').value.trim();
+                const confirmPass = document.getElementById('rp-confirm').value.trim();
+                const errEl = document.getElementById('rp-error');
+                const errMsg = document.getElementById('rp-error-msg');
+                
+                errEl.style.display = 'none';
+                
+                if (currentPass !== PASSCODE) {
+                    errMsg.textContent = 'Incorrect current password!';
+                    errEl.style.display = 'block';
+                    return;
                 }
-            } else if (currentPass !== null) {
-                alert("Incorrect password!");
-            }
+                if (!newPass || newPass.length < 4) {
+                    errMsg.textContent = 'New password must be at least 4 characters.';
+                    errEl.style.display = 'block';
+                    return;
+                }
+                if (newPass !== confirmPass) {
+                    errMsg.textContent = 'New passwords do not match!';
+                    errEl.style.display = 'block';
+                    return;
+                }
+                
+                // Update the master password
+                PASSCODE = newPass;
+                localStorage.setItem('shivMasterPassword', PASSCODE);
+                
+                // Re-encrypt all existing data with new password
+                if (notes.length > 0) saveNotesToStorage();
+                if (feedbacks.length > 0) saveFeedbacksToStorage();
+                
+                // Also lock the vault so it re-prompts with new password
+                sessionStorage.removeItem('vaultUnlocked');
+                
+                resetModal.innerHTML = `
+                    <div style="background:linear-gradient(135deg,#0d1117,#1a1f2e);border:1px solid rgba(50,200,100,0.3);border-radius:16px;padding:2.5rem;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.7);">
+                        <i class="fas fa-check-circle" style="font-size:3rem;color:#2ec4b6;margin-bottom:1rem;display:block;"></i>
+                        <h3 style="color:#fff;margin-bottom:0.5rem;">Password Updated!</h3>
+                        <p style="color:rgba(255,255,255,0.6);font-size:0.9rem;">Your master password has been changed successfully. Use the new password everywhere — vault, notes, and delete confirmations.</p>
+                        <button onclick="this.closest('#reset-password-modal').remove()" style="margin-top:1.5rem;padding:0.7rem 2rem;background:linear-gradient(135deg,#ffb703,#d4af37);border:none;border-radius:10px;color:#000;font-weight:700;cursor:pointer;">Done</button>
+                    </div>
+                `;
+            });
         });
     }
 }); // End of DOMContentLoaded
