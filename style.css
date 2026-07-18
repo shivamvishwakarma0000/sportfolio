@@ -2574,3 +2574,35 @@ body.font-playfair {
     --font-body: 'Inter', sans-serif;
     --font-display: 'Playfair Display', serif;
 }
+
+/* Resume Cards Button Layout */
+.resume-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Mobile Responsiveness Improvements */
+@media (max-width: 576px) {
+    .theme-customizer-panel {
+        position: fixed;
+        top: 75px;
+        left: 20px;
+        right: 20px;
+        width: auto;
+        transform: scale(0.9) translateY(-10px);
+        transform-origin: top right;
+    }
+    .theme-customizer-panel.active {
+        transform: scale(1) translateY(0);
+    }
+    .glass-card {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .resume-actions {
+        flex-direction: column !important;
+        gap: 0.8rem !important;
+    }
+}
