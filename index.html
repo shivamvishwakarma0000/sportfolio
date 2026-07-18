@@ -1603,6 +1603,9 @@
           <i class="fas fa-terminal"></i> shivam@developer: ~/portfolio - scrollable console
         </div>
         <div class="ide-actions">
+          <button id="ide-feedback-btn" class="ide-action-btn" title="Feedback & Personal Space" style="margin-right: 8px;">
+            <i class="fas fa-comment-dots"></i> Feedback
+          </button>
           <button id="ide-palette-btn" class="ide-action-btn" title="Toggle Customizer">
             <i class="fas fa-palette"></i>
           </button>
@@ -2411,6 +2414,207 @@
           <p class="bio-desc" style="font-size: 0.75rem;">Copyright &copy; 2026 Shivam. Made with <i class="fas fa-heart" style="color: var(--primary-color);"></i> by ShivamCode</p>
         </div>
 
+      </div>
+    </div>
+
+    <!-- CryptoJS for AES Encryption -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <!-- html2pdf.js for poster PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- Feedback Floating Button -->
+    <div id="feedback-trigger-btn" class="feedback-trigger-btn" title="Feedback & Personal Space">
+      <i class="fas fa-comment-dots"></i>
+    </div>
+
+    <!-- Feedback & Personal Space Modal -->
+    <div id="feedback-dashboard-modal" class="feedback-modal-overlay">
+      <div class="feedback-modal-card glass-card">
+        <!-- Close Button -->
+        <button id="feedback-modal-close" class="feedback-modal-close-btn">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <!-- Lock Screen / Passcode Area -->
+        <div id="feedback-lock-screen" class="feedback-lock-screen" style="display: none;">
+          <div class="lock-container">
+            <i class="fas fa-lock lock-icon"></i>
+            <h3>Access Locked Space</h3>
+            <p>Enter password to unlock private notes and logs</p>
+            <div class="lock-auth-box">
+              <input type="password" id="feedback-passcode-input" placeholder="Enter Access Password" />
+              <button id="feedback-unlock-btn" class="f-btn-primary">Unlock</button>
+            </div>
+            <p id="feedback-lock-error" class="error-text" style="display: none;"></p>
+            <button id="feedback-back-to-public-btn" class="f-btn-link"><i class="fas fa-arrow-left"></i> Back to Public Feedback</button>
+          </div>
+        </div>
+
+        <!-- Main Modal Content: Split View -->
+        <div id="feedback-modal-content" class="feedback-modal-content">
+          <!-- Sidebar Nav (Only visible when unlocked) -->
+          <div id="feedback-sidebar" class="feedback-sidebar" style="display: none;">
+            <div class="sidebar-header">
+              <i class="fas fa-user-shield admin-icon"></i>
+              <span>Secure Space</span>
+            </div>
+            <ul class="sidebar-menu">
+              <li class="menu-item active" data-tab="personal-notes">
+                <i class="fas fa-key"></i> Personal Notes
+              </li>
+              <li class="menu-item" data-tab="received-feedbacks">
+                <i class="fas fa-inbox"></i> Feedbacks Log
+              </li>
+              <li class="menu-item" data-tab="settings">
+                <i class="fas fa-cog"></i> API Settings
+              </li>
+            </ul>
+            <div class="sidebar-footer">
+              <button id="feedback-lock-btn" class="f-btn-outline-danger"><i class="fas fa-lock"></i> Lock Space</button>
+            </div>
+          </div>
+
+          <!-- Active Panel Container -->
+          <div class="feedback-panel-container">
+            
+            <!-- PANEL 1: Submit Feedback (Publicly Visible) -->
+            <div id="panel-public-submit" class="feedback-panel active">
+              <div class="panel-header">
+                <h2>Send Feedback</h2>
+                <p>I would love to hear your thoughts or suggestions about my work!</p>
+              </div>
+              <form id="public-feedback-form" class="feedback-form">
+                <div class="form-group">
+                  <label for="feedback-user-name">Name</label>
+                  <input type="text" id="feedback-user-name" placeholder="Your Name" required />
+                </div>
+                <div class="form-group">
+                  <label for="feedback-user-email">Email (Optional)</label>
+                  <input type="email" id="feedback-user-email" placeholder="Your Email" />
+                </div>
+                <div class="form-group">
+                  <label for="feedback-message">Message</label>
+                  <textarea id="feedback-message" rows="5" placeholder="Write your feedback here..." required></textarea>
+                </div>
+                <button type="submit" class="f-btn-primary submit-btn">
+                  <i class="fas fa-paper-plane"></i> Submit Feedback
+                </button>
+              </form>
+              <div class="panel-divider"><span>OR</span></div>
+              <div class="admin-access-section">
+                <button id="feedback-go-admin-btn" class="f-btn-outline">
+                  <i class="fas fa-shield-alt"></i> Access Personal Locker & Logs
+                </button>
+              </div>
+            </div>
+
+            <!-- PANEL 2: Personal Notes Manager (Locked) -->
+            <div id="panel-personal-notes" class="feedback-panel">
+              <div class="panel-header-row">
+                <h2>Personal Study Notes</h2>
+                <button id="f-new-note-btn" class="f-btn-primary f-btn-sm"><i class="fas fa-plus"></i> New Note</button>
+              </div>
+
+              <!-- Note List (Hidden during active editing) -->
+              <div id="f-notes-list-view">
+                <div class="search-category-row">
+                  <select id="f-filter-category" class="f-select">
+                    <option value="all">All Categories</option>
+                    <option value="Introduction">Introduction</option>
+                    <option value="Hobby">Hobby</option>
+                    <option value="Strength">Strength</option>
+                    <option value="Weakness">Weakness</option>
+                    <option value="Custom">Custom</option>
+                  </select>
+                </div>
+                <div id="f-notes-grid" class="f-notes-grid">
+                  <!-- Dynamically populated -->
+                </div>
+              </div>
+
+              <!-- Note Editor Form (Hidden by default, shown on New/Edit) -->
+              <div id="f-note-edit-view" style="display: none;">
+                <form id="f-note-form" class="feedback-form">
+                  <input type="hidden" id="f-note-id" />
+                  <div class="form-row">
+                    <div class="form-group half-width">
+                      <label for="f-note-title">Title</label>
+                      <input type="text" id="f-note-title" placeholder="e.g. My Bio" required />
+                    </div>
+                    <div class="form-group half-width">
+                      <label for="f-note-category">Category</label>
+                      <select id="f-note-category" class="f-select">
+                        <option value="Introduction">Introduction</option>
+                        <option value="Hobby">Hobby</option>
+                        <option value="Strength">Strength</option>
+                        <option value="Weakness">Weakness</option>
+                        <option value="Custom">Custom</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="f-note-content">Note Content</label>
+                    <textarea id="f-note-content" rows="6" placeholder="Write your text here... You can use raw key points and hit Enhance with AI below!" required></textarea>
+                  </div>
+                  
+                  <div class="editor-actions-row">
+                    <button type="button" id="f-btn-ai-enhance" class="f-btn-accent">
+                      <i class="fas fa-magic"></i> Enhance text with AI Template
+                    </button>
+                  </div>
+
+                  <div class="pdf-export-row">
+                    <div class="form-group" style="margin-bottom: 0; flex-grow: 1;">
+                      <label for="f-pdf-theme">Poster PDF Theme</label>
+                      <select id="f-pdf-theme" class="f-select">
+                        <option value="neon-dark">Neon Dark (Cyberpunk)</option>
+                        <option value="sunset-aura">Sunset Aura (Gradient)</option>
+                        <option value="minimalist-gold">Minimalist Gold</option>
+                        <option value="emerald-glass">Emerald Glass</option>
+                      </select>
+                    </div>
+                    <button type="button" id="f-btn-generate-pdf" class="f-btn-success">
+                      <i class="fas fa-file-pdf"></i> Save Poster PDF
+                    </button>
+                  </div>
+
+                  <div class="form-buttons-row">
+                    <button type="button" id="f-btn-cancel-note" class="f-btn-outline">Cancel</button>
+                    <button type="submit" class="f-btn-primary">Save Note</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- PANEL 3: Received Feedbacks Log (Locked) -->
+            <div id="panel-received-feedbacks" class="feedback-panel">
+              <div class="panel-header">
+                <h2>Received Public Feedbacks</h2>
+                <p>Private log of submissions from website visitors.</p>
+              </div>
+              <div id="f-feedback-list" class="f-feedback-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- PANEL 4: API Settings (Locked) -->
+            <div id="panel-settings" class="feedback-panel">
+              <div class="panel-header">
+                <h2>AI & API Settings</h2>
+                <p>Configure the AI enhancement engine. You can use standard client-side templates or plug in your own Google Gemini API key for fully customized AI expansions.</p>
+              </div>
+              <form id="f-settings-form" class="feedback-form">
+                <div class="form-group">
+                  <label for="f-gemini-key">Gemini API Key (Optional)</label>
+                  <input type="password" id="f-gemini-key" placeholder="Enter AIzaSy..." />
+                  <small class="form-help-text">This key remains in your local browser storage. If left empty, a robust local rule-based AI template enhancer will be used.</small>
+                </div>
+                <button type="submit" class="f-btn-primary">Save Key Settings</button>
+              </form>
+            </div>
+
+          </div>
+        </div>
       </div>
     </div>
 
