@@ -1553,43 +1553,55 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Please fill out the Title and Content before generating a PDF.');
                 return;
             }
-            
-            // Build a very simple, lightweight DOM element for PDF that works reliably on mobile phones
+            // Build the colorful poster element based on user's theme choice
             const posterDiv = document.createElement('div');
+            posterDiv.className = `pdf-poster-container theme-${theme}`;
             
             const htmlContent = markdownToHTML(content);
             const currentDate = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
             
-            // Simple plain-text-style layout (no huge CSS backgrounds that crash iOS Safari)
             posterDiv.innerHTML = `
-                <div style="font-family: Arial, sans-serif; padding: 30px; color: #000; background: #fff;">
-                    <div style="border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
-                        <h1 style="margin: 0 0 5px 0; font-size: 26px; color: #000;">${title}</h1>
-                        <p style="margin: 0; font-size: 14px; color: #555;">
-                            <strong>Category:</strong> ${category} &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Date:</strong> ${currentDate}
-                        </p>
+                <div class="poster-frame">
+                    <div class="poster-header">
+                        <span class="poster-badge">${category}</span>
+                        <span style="font-weight:800; letter-spacing:1px; font-size:1.1rem; color:inherit;"><i class="fas fa-shield-alt" style="color:inherit; margin-right:8px;"></i>SHIVAM LOCKER</span>
                     </div>
-                    <div style="font-size: 14px; line-height: 1.6; color: #111;">
-                        ${htmlContent}
+                    <div class="poster-body">
+                        <div class="poster-content-card">
+                            <h1 class="poster-title" style="margin-top:0; margin-bottom:1.5rem; font-size:2.2rem; line-height:1.2;">${title}</h1>
+                            <div class="poster-content-text">${htmlContent}</div>
+                        </div>
                     </div>
-                    <div style="margin-top: 50px; border-top: 1px solid #ccc; padding-top: 15px; font-size: 11px; color: #888; text-align: center;">
-                        Shivam Personal Space - Secure Document
+                    <div class="poster-footer">
+                        <span class="poster-date">Generated on ${currentDate}</span>
+                        <span class="poster-signature" style="font-style:italic;">Shivam Personal Space</span>
                     </div>
                 </div>
             `;
             
-            // Append off-screen
+            // Append securely behind the page (so the user doesn't see it, but html2canvas sees it perfectly)
             posterDiv.style.position = 'absolute';
-            posterDiv.style.left = '-9999px';
-            posterDiv.style.top = '-9999px';
-            posterDiv.style.width = '794px'; // A4 width at 96 DPI
+            posterDiv.style.top = '0';
+            posterDiv.style.left = '0';
+            posterDiv.style.zIndex = '-100';
+            posterDiv.style.pointerEvents = 'none';
+            // Force A4 size
+            posterDiv.style.width = '794px';
+            posterDiv.style.height = '1123px';
+            
             document.body.appendChild(posterDiv);
             
             const opt = {
-                margin:       10,
+                margin:       0,
                 filename:     `Shivam_${category}_${title.toLowerCase().replace(/\s+/g, '_')}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false, windowWidth: 800, backgroundColor: '#ffffff' },
+                image:        { type: 'jpeg', quality: 1.0 },
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true, 
+                    logging: false, 
+                    windowWidth: 800,
+                    backgroundColor: '#ffffff' // prevents transparent black screen bug on mobile
+                },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             
