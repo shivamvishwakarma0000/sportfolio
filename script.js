@@ -771,11 +771,30 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        files.forEach(file => {
+        files.forEach((file, index) => {
             const fileItem = document.createElement('div');
             fileItem.className = 'file-item';
             
             const fileIconClass = (file.type === 'pdf' || file.name.toLowerCase().endsWith('.pdf')) ? 'fa-file-pdf pdf' : 'fa-file-image image';
+            
+            let viewUrl = file.url;
+            // If it's a data URL, convert to Blob URL to fix "View" in modern browsers
+            if (viewUrl.startsWith('data:')) {
+                try {
+                    const arr = viewUrl.split(',');
+                    const mime = arr[0].match(/:(.*?);/)[1];
+                    const bstr = atob(arr[1]);
+                    let n = bstr.length;
+                    const u8arr = new Uint8Array(n);
+                    while(n--){
+                        u8arr[n] = bstr.charCodeAt(n);
+                    }
+                    const blob = new Blob([u8arr], {type: mime});
+                    viewUrl = URL.createObjectURL(blob);
+                } catch(e) {
+                    console.error("Failed to convert data URL to Blob", e);
+                }
+            }
             
             fileItem.innerHTML = `
                 <div class="file-info">
@@ -785,12 +804,46 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="file-meta">${file.size} &bull; ${file.date}</span>
                     </div>
                 </div>
-                <div class="file-actions">
-                    <a href="${file.url}" target="_blank" class="btn btn-outline file-btn" style="text-decoration:none;"><i class="fas fa-eye"></i> View</a>
-                    <a href="${file.url}" download="${file.name}" class="btn btn-primary file-btn" style="text-decoration:none;"><i class="fas fa-download"></i> Download</a>
+                <div class="file-actions" style="flex-wrap: wrap; gap: 5px;">
+                    <a href="${viewUrl}" target="_blank" class="btn btn-outline file-btn" style="text-decoration:none; padding: 5px 10px; font-size: 0.8rem;"><i class="fas fa-eye"></i></a>
+                    <a href="${file.url}" download="${file.name}" class="btn btn-primary file-btn" style="text-decoration:none; padding: 5px 10px; font-size: 0.8rem;"><i class="fas fa-download"></i></a>
+                    <button class="btn file-btn delete-file-btn" data-index="${index}" style="background: rgba(255,50,50,0.2); color: #ff5555; padding: 5px 10px; font-size: 0.8rem; border: 1px solid rgba(255,50,50,0.5);"><i class="fas fa-trash"></i></button>
                 </div>
             `;
             vaultFilesList.appendChild(fileItem);
+        });
+        
+        // Attach Delete Listeners
+        const deleteBtns = vaultFilesList.querySelectorAll('.delete-file-btn');
+        deleteBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = e.currentTarget.getAttribute('data-index');
+                const password = prompt("ENTER VAULT PASSWORD TO DELETE FILE:");
+                
+                if (password === '@Shivam0000') {
+                    // It is possible this file is a custom file
+                    // We must rebuild customVaultFiles for this folder by comparing what we are deleting
+                    const fileToDelete = vaultDatabase[folderKey][idx];
+                    
+                    // Remove from working memory
+                    vaultDatabase[folderKey].splice(idx, 1);
+                    
+                    // If it is in local storage, remove it
+                    if (customVaultFiles[folderKey]) {
+                        // Find the exact match in local storage array (by name and date)
+                        const customIdx = customVaultFiles[folderKey].findIndex(f => f.name === fileToDelete.name && f.date === fileToDelete.date);
+                        if (customIdx !== -1) {
+                            customVaultFiles[folderKey].splice(customIdx, 1);
+                            localStorage.setItem('shivCustomFiles', JSON.stringify(customVaultFiles));
+                        }
+                    }
+                    
+                    // Re-render
+                    renderVaultFiles(folderKey);
+                } else if (password !== null) {
+                    alert("ACCESS DENIED: Incorrect password.");
+                }
+            });
         });
     }
 
