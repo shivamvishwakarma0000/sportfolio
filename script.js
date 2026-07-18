@@ -740,51 +740,73 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // Fullscreen Terminal IDE Workspace Logic
     // ==========================================
-    const treeNodes = document.querySelectorAll('.tree-node.file');
-    const editorTabs = document.querySelectorAll('.editor-tab');
-    const editorPanes = document.querySelectorAll('.editor-pane');
-    
-    function selectFile(fileName) {
-        // Update Explorer File Tree
-        treeNodes.forEach(node => {
-            if (node.dataset.file === fileName) {
-                node.classList.add('active');
-            } else {
-                node.classList.remove('active');
-            }
+    const consoleBody = document.getElementById('terminal-console-body');
+    const navTabs = document.querySelectorAll('.terminal-nav-tabs .editor-tab');
+    const sections = document.querySelectorAll('.terminal-section');
+
+    if (consoleBody && navTabs.length > 0) {
+        // Clicks scroll to section
+        navTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetId = tab.dataset.target;
+                const targetEl = document.getElementById(targetId);
+                if (targetEl) {
+                    // Remove active from all tabs
+                    navTabs.forEach(t => t.classList.remove('active'));
+                    // Add active to current
+                    tab.classList.add('active');
+                    
+                    // Smoothly scroll target element into viewport within consoleBody
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
         });
 
-        // Update Editor Tabs
-        editorTabs.forEach(tab => {
-            if (tab.dataset.file === fileName) {
-                tab.classList.add('active');
-            } else {
-                tab.classList.remove('active');
-            }
-        });
+        // Scroll spy to update tabs active class as user scrolls
+        consoleBody.addEventListener('scroll', () => {
+            let currentSectionId = '';
+            const containerTop = consoleBody.getBoundingClientRect().top;
+            
+            sections.forEach(sec => {
+                const rect = sec.getBoundingClientRect();
+                // If section top is near container top or above it
+                if (rect.top - containerTop <= 150) {
+                    currentSectionId = sec.id;
+                }
+            });
 
-        // Update Editor Viewport Panes
-        editorPanes.forEach(pane => {
-            if (pane.id === `pane-${fileName}`) {
-                pane.classList.add('active');
-            } else {
-                pane.classList.remove('active');
+            if (currentSectionId) {
+                navTabs.forEach(tab => {
+                    if (tab.dataset.target === currentSectionId) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
             }
         });
     }
 
-    // Bind explorer nodes click
-    treeNodes.forEach(node => {
-        node.addEventListener('click', () => {
-            selectFile(node.dataset.file);
-        });
-    });
-
-    // Bind editor tabs click
-    editorTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            selectFile(tab.dataset.file);
-        });
+    // Directory folder expansion inside Terminal Vault
+    const vaultFolders = document.querySelectorAll('.terminal-vault-folder');
+    vaultFolders.forEach(folder => {
+        const header = folder.querySelector('.folder-header');
+        const filesDiv = folder.querySelector('.folder-files');
+        if (header && filesDiv) {
+            header.addEventListener('click', () => {
+                const isOpen = filesDiv.style.display === 'block';
+                filesDiv.style.display = isOpen ? 'none' : 'block';
+                // Toggle icon
+                const folderIcon = header.querySelector('i');
+                if (folderIcon) {
+                    if (isOpen) {
+                        folderIcon.className = 'fas fa-folder text-primary';
+                    } else {
+                        folderIcon.className = 'fas fa-folder-open text-primary';
+                    }
+                }
+            });
+        }
     });
 
     // Terminal IDE Actions
@@ -827,6 +849,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 ideVaultError.style.display = 'block';
                 ideVaultPasscode.classList.add('shake');
                 setTimeout(() => ideVaultPasscode.classList.remove('shake'), 500);
+            }
+        });
+    }
+
+    // Lock vault button in Terminal
+    const ideVaultLockBtn = document.getElementById('ide-vault-lock-btn');
+    if (ideVaultLockBtn) {
+        ideVaultLockBtn.addEventListener('click', () => {
+            if (ideVaultLocked && ideVaultUnlocked) {
+                ideVaultLocked.style.display = 'block';
+                ideVaultUnlocked.style.display = 'none';
+                sessionStorage.removeItem('vaultUnlocked');
+                // Sync with main vault lock
+                if (vaultFoldersArea && vaultLockScreen) {
+                    vaultLockScreen.style.display = 'flex';
+                    vaultFoldersArea.classList.remove('active');
+                }
             }
         });
     }
