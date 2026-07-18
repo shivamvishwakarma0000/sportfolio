@@ -813,35 +813,75 @@ document.addEventListener('DOMContentLoaded', () => {
             vaultFilesList.appendChild(fileItem);
         });
         
-        // Attach Delete Listeners
+        // Attach Delete Listeners using Custom Modal
         const deleteBtns = vaultFilesList.querySelectorAll('.delete-file-btn');
         deleteBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const idx = e.currentTarget.getAttribute('data-index');
-                const password = prompt("ENTER VAULT PASSWORD TO DELETE FILE:");
+                const deleteModal = document.getElementById('vault-delete-modal');
+                const passInput = document.getElementById('vault-delete-password-input');
+                const confirmBtn = document.getElementById('vault-delete-confirm');
+                const cancelBtn = document.getElementById('vault-delete-cancel');
+                const errorMsg = document.getElementById('vault-delete-error');
                 
-                if (password === '@Shivam0000') {
-                    // It is possible this file is a custom file
-                    // We must rebuild customVaultFiles for this folder by comparing what we are deleting
-                    const fileToDelete = vaultDatabase[folderKey][idx];
+                if (deleteModal) {
+                    deleteModal.style.display = 'flex';
+                    passInput.value = '';
+                    errorMsg.style.display = 'none';
+                    passInput.focus();
                     
-                    // Remove from working memory
-                    vaultDatabase[folderKey].splice(idx, 1);
+                    // Cleanup previous listeners to avoid duplicates
+                    const newConfirm = confirmBtn.cloneNode(true);
+                    confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+                    const newCancel = cancelBtn.cloneNode(true);
+                    cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
                     
-                    // If it is in local storage, remove it
-                    if (customVaultFiles[folderKey]) {
-                        // Find the exact match in local storage array (by name and date)
-                        const customIdx = customVaultFiles[folderKey].findIndex(f => f.name === fileToDelete.name && f.date === fileToDelete.date);
-                        if (customIdx !== -1) {
-                            customVaultFiles[folderKey].splice(customIdx, 1);
-                            localStorage.setItem('shivCustomFiles', JSON.stringify(customVaultFiles));
+                    newCancel.addEventListener('click', () => {
+                        deleteModal.style.display = 'none';
+                    });
+                    
+                    newConfirm.addEventListener('click', () => {
+                        if (passInput.value === '@Shivam0000') {
+                            // Password correct, proceed with deletion
+                            const fileToDelete = vaultDatabase[folderKey][idx];
+                            vaultDatabase[folderKey].splice(idx, 1);
+                            
+                            if (customVaultFiles[folderKey]) {
+                                const customIdx = customVaultFiles[folderKey].findIndex(f => f.name === fileToDelete.name && f.date === fileToDelete.date);
+                                if (customIdx !== -1) {
+                                    customVaultFiles[folderKey].splice(customIdx, 1);
+                                    localStorage.setItem('shivCustomFiles', JSON.stringify(customVaultFiles));
+                                }
+                            }
+                            
+                            deleteModal.style.display = 'none';
+                            
+                            // Check if folder is now empty and is a custom folder
+                            if (vaultDatabase[folderKey].length === 0 && folderKey.startsWith('custom_')) {
+                                // Delete folder completely
+                                customVaultFolders = customVaultFolders.filter(f => f.key !== folderKey);
+                                localStorage.setItem('shivCustomFolders', JSON.stringify(customVaultFolders));
+                                delete vaultDatabase[folderKey];
+                                delete customVaultFiles[folderKey];
+                                localStorage.setItem('shivCustomFiles', JSON.stringify(customVaultFiles));
+                                
+                                // Remove folder card from DOM
+                                const folderCard = document.querySelector(`.folder-card[data-folder="${folderKey}"]`);
+                                if (folderCard) folderCard.remove();
+                                
+                                // Close vault modal since folder doesn't exist anymore
+                                const vModal = document.getElementById('vault-modal');
+                                if (vModal) vModal.classList.remove('active');
+                            } else {
+                                // Re-render
+                                renderVaultFiles(folderKey);
+                            }
+                        } else {
+                            errorMsg.style.display = 'block';
+                            passInput.value = '';
+                            passInput.focus();
                         }
-                    }
-                    
-                    // Re-render
-                    renderVaultFiles(folderKey);
-                } else if (password !== null) {
-                    alert("ACCESS DENIED: Incorrect password.");
+                    });
                 }
             });
         });
@@ -1725,104 +1765,103 @@ document.addEventListener('DOMContentLoaded', () => {
             const theme = pdfThemeSelect.value;
             
             if (!title || !content) {
-                alert('Please fill out the Title and Content before generating a PDF.');
+                alert('Please fill out the Title and Content before saving to your Journal.');
                 return;
             }
-            // Build the colorful poster element based on user's theme choice
-            const posterDiv = document.createElement('div');
-            posterDiv.className = `pdf-poster-container theme-${theme}`;
             
             const htmlContent = markdownToHTML(content);
             const currentDate = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
             
-            posterDiv.innerHTML = `
-                <div class="poster-frame">
-                    <div class="poster-header">
-                        <span class="poster-badge">${category}</span>
-                        <span style="font-weight:800; letter-spacing:1px; font-size:1.1rem; color:inherit;"><i class="fas fa-shield-alt" style="color:inherit; margin-right:8px;"></i>SHIVAM LOCKER</span>
+            const newJournal = {
+                id: Date.now().toString(),
+                title,
+                category,
+                theme,
+                htmlContent,
+                date: currentDate,
+                rawContent: content
+            };
+            
+            let savedJournals = JSON.parse(localStorage.getItem('shivSavedJournals')) || [];
+            savedJournals.unshift(newJournal); // add to top
+            localStorage.setItem('shivSavedJournals', JSON.stringify(savedJournals));
+            
+            // Show Success Button temporarily
+            const originalHtml = btnGeneratePdf.innerHTML;
+            btnGeneratePdf.innerHTML = '<i class="fas fa-check"></i> Saved to Journal!';
+            btnGeneratePdf.classList.add('f-btn-success');
+            setTimeout(() => {
+                btnGeneratePdf.innerHTML = originalHtml;
+            }, 2000);
+            
+            // Re-render journals list
+            renderSavedJournals();
+        });
+        
+        // Initial render
+        renderSavedJournals();
+    }
+    
+    function renderSavedJournals() {
+        const journalsContainer = document.getElementById('f-saved-journals-list');
+        if (!journalsContainer) return;
+        
+        let savedJournals = JSON.parse(localStorage.getItem('shivSavedJournals')) || [];
+        
+        if (savedJournals.length === 0) {
+            journalsContainer.innerHTML = '<p style="color: rgba(255,255,255,0.4); text-align: center; padding: 2rem;">No journals saved yet. Write a note and save it to your journal!</p>';
+            return;
+        }
+        
+        journalsContainer.innerHTML = '';
+        
+        savedJournals.forEach((journal, index) => {
+            const journalCard = document.createElement('div');
+            // We use the same theme classes used for the poster!
+            journalCard.className = `pdf-poster-container theme-${journal.theme}`;
+            journalCard.style.position = 'relative'; // Override absolute
+            journalCard.style.width = '100%'; // Fit container
+            journalCard.style.height = 'auto'; // Auto height
+            journalCard.style.marginBottom = '1.5rem';
+            journalCard.style.transform = 'none'; // reset any scaling
+            journalCard.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+            journalCard.style.borderRadius = '12px';
+            journalCard.style.overflow = 'hidden';
+            
+            journalCard.innerHTML = `
+                <div class="poster-frame" style="padding: 1.5rem;">
+                    <div class="poster-header" style="margin-bottom: 1rem;">
+                        <span class="poster-badge">${journal.category}</span>
+                        <button class="delete-journal-btn btn-outline" data-id="${journal.id}" style="padding: 4px 8px; font-size: 0.8rem; color: #ff5555; border-color: rgba(255,50,50,0.3); background: transparent; cursor: pointer; border-radius: 4px;"><i class="fas fa-trash"></i></button>
                     </div>
                     <div class="poster-body">
-                        <div class="poster-content-card">
-                            <h1 class="poster-title" style="margin-top:0; margin-bottom:1.5rem; font-size:2.2rem; line-height:1.2;">${title}</h1>
-                            <div class="poster-content-text">${htmlContent}</div>
+                        <div class="poster-content-card" style="padding: 1rem;">
+                            <h1 class="poster-title" style="margin-top:0; margin-bottom:1rem; font-size:1.5rem; line-height:1.2;">${journal.title}</h1>
+                            <div class="poster-content-text" style="font-size: 0.9rem;">${journal.htmlContent}</div>
                         </div>
                     </div>
-                    <div class="poster-footer">
-                        <span class="poster-date">Generated on ${currentDate}</span>
-                        <span class="poster-signature" style="font-style:italic;">Shivam Personal Space</span>
+                    <div class="poster-footer" style="margin-top: 1rem; padding-top: 1rem;">
+                        <span class="poster-date">Saved on ${journal.date}</span>
                     </div>
                 </div>
             `;
             
-            // On Safari, elements with negative z-index or hidden from viewport often get discarded from rendering tree.
-            // We fix this by placing it at the very top of the page with a positive z-index, but we hide it 
-            // from the user by placing a full-screen loading overlay over it with an even higher z-index!
-            posterDiv.style.position = 'absolute';
-            posterDiv.style.top = '0';
-            posterDiv.style.left = '0';
-            posterDiv.style.zIndex = '999998'; 
-            posterDiv.style.pointerEvents = 'none';
-            // Force A4 size
-            posterDiv.style.width = '794px';
-            posterDiv.style.height = '1123px';
-            
-            // Create Loading Screen Overlay
-            const loadingOverlay = document.createElement('div');
-            loadingOverlay.style.position = 'fixed';
-            loadingOverlay.style.top = '0';
-            loadingOverlay.style.left = '0';
-            loadingOverlay.style.width = '100vw';
-            loadingOverlay.style.height = '100vh';
-            loadingOverlay.style.backgroundColor = 'rgba(10, 14, 23, 0.98)';
-            loadingOverlay.style.zIndex = '999999';
-            loadingOverlay.style.display = 'flex';
-            loadingOverlay.style.flexDirection = 'column';
-            loadingOverlay.style.alignItems = 'center';
-            loadingOverlay.style.justifyContent = 'center';
-            loadingOverlay.style.color = '#fff';
-            loadingOverlay.style.backdropFilter = 'blur(10px)';
-            loadingOverlay.innerHTML = `
-                <i class="fas fa-circle-notch fa-spin" style="font-size:3rem; margin-bottom:1.5rem; color: #00d2ff;"></i>
-                <h2 style="font-family: 'Outfit', sans-serif; font-weight: 500;">Generating High-Quality PDF...</h2>
-                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 0.5rem;">Please wait a moment</p>
-            `;
-            
-            document.body.appendChild(posterDiv);
-            document.body.appendChild(loadingOverlay);
-            
-            const opt = {
-                margin:       0,
-                filename:     `Shivam_${category}_${title.toLowerCase().replace(/\s+/g, '_')}.pdf`,
-                image:        { type: 'jpeg', quality: 1.0 },
-                html2canvas:  { 
-                    scale: 2, 
-                    useCORS: true, 
-                    logging: false, 
-                    windowWidth: 800,
-                    backgroundColor: '#ffffff' // prevents transparent black screen bug on mobile
-                },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            
-            btnGeneratePdf.disabled = true;
-            btnGeneratePdf.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rendering PDF...';
-            
-            // Wait 250ms for fonts to load and the browser to paint the new element
-            setTimeout(() => {
-                html2pdf().set(opt).from(posterDiv).save().then(() => {
-                    document.body.removeChild(posterDiv);
-                    document.body.removeChild(loadingOverlay);
-                    btnGeneratePdf.disabled = false;
-                    btnGeneratePdf.innerHTML = '<i class="fas fa-file-pdf"></i> Save Poster PDF';
-                }).catch(err => {
-                    console.error("PDF generation failed", err);
-                    document.body.removeChild(posterDiv);
-                    document.body.removeChild(loadingOverlay);
-                    btnGeneratePdf.disabled = false;
-                    btnGeneratePdf.innerHTML = '<i class="fas fa-file-pdf"></i> Save Poster PDF';
-                    alert('PDF generation failed. Check console for details.');
-                });
-            }, 300);
+            journalsContainer.appendChild(journalCard);
+        });
+        
+        // Delete Listeners
+        journalsContainer.querySelectorAll('.delete-journal-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.currentTarget.getAttribute('data-id');
+                const password = prompt("Enter passcode to delete this journal:");
+                if (password === '@Shivam0000') {
+                    savedJournals = savedJournals.filter(j => j.id !== id);
+                    localStorage.setItem('shivSavedJournals', JSON.stringify(savedJournals));
+                    renderSavedJournals();
+                } else if (password !== null) {
+                    alert("Incorrect Password!");
+                }
+            });
         });
     }
 
