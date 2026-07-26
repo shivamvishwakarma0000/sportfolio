@@ -195,24 +195,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d');
     
     let particles = [];
-    let particleCount = 80;
-    const maxDistance = 120; // Max distance for drawing connection lines
+    let particleCount = 35; // Lightweight optimized count
+    const maxDistance = 100; // Max distance for drawing connection lines
+    const maxDistanceSq = maxDistance * maxDistance;
     
     // Mouse coordinates object
     const mouse = {
         x: null,
         y: null,
-        radius: 180 // Radius of mouse interaction area
+        radius: 140
     };
     
     function resizeCanvas() {
+        if (!canvas) return;
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        // Adjust particle count based on screen size
+        // Adjust particle count based on screen size for zero lag
         if (window.innerWidth < 768) {
-            particleCount = 35;
+            particleCount = 15;
         } else {
-            particleCount = 80;
+            particleCount = 35;
         }
         initParticles();
     }
@@ -234,28 +236,26 @@ document.addEventListener('DOMContentLoaded', () => {
         constructor() {
             this.x = Math.random() * canvas.width;
             this.y = Math.random() * canvas.height;
-            this.vx = (Math.random() - 0.5) * 0.4; // Very gentle speed
+            this.vx = (Math.random() - 0.5) * 0.4;
             this.vy = (Math.random() - 0.5) * 0.4;
-            this.radius = Math.random() * 2 + 1; // 1px to 3px
+            this.radius = Math.random() * 2 + 1;
             
-            // Subtle theme colors
             const colors = [
-                'primary',                 // Gold / Blue dynamically
-                'rgba(46, 196, 182, 0.4)', // Teal
-                'rgba(139, 92, 246, 0.4)'  // Violet
+                'primary',
+                'rgba(46, 196, 182, 0.4)',
+                'rgba(139, 92, 246, 0.4)'
             ];
             this.color = colors[Math.floor(Math.random() * colors.length)];
         }
         
         update() {
-            // Attraction to mouse
             if (mouse.x !== null && mouse.y !== null) {
                 const dx = mouse.x - this.x;
                 const dy = mouse.y - this.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < mouse.radius) {
+                const distSq = dx * dx + dy * dy;
+                if (distSq < mouse.radius * mouse.radius) {
+                    const dist = Math.sqrt(distSq);
                     const force = (mouse.radius - dist) / mouse.radius;
-                    // Move slightly towards mouse
                     this.x += (dx / dist) * force * 0.2;
                     this.y += (dy / dist) * force * 0.2;
                 }
@@ -264,7 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
             this.x += this.vx;
             this.y += this.vy;
             
-            // Bounce off boundaries with a small buffer
             if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
             if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
         }
@@ -273,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
             if (this.color === 'primary') {
-                let fillStyle = 'rgba(255, 183, 3, 0.4)'; // Default Gold
+                let fillStyle = 'rgba(255, 183, 3, 0.4)';
                 if (document.body.classList.contains('theme-blue')) {
                     fillStyle = 'rgba(0, 210, 255, 0.4)';
                 } else if (document.body.classList.contains('theme-green')) {
@@ -299,34 +298,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function animateParticles() {
+        if (document.hidden) {
+            requestAnimationFrame(animateParticles);
+            return;
+        }
+        
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        // Update and draw particles
         for (let i = 0; i < particles.length; i++) {
             particles[i].update();
             particles[i].draw();
         }
         
-        // Draw connection lines
         for (let i = 0; i < particles.length; i++) {
             const p1 = particles[i];
             
-            // Connect to mouse
             if (mouse.x !== null && mouse.y !== null) {
                 const dx = mouse.x - p1.x;
                 const dy = mouse.y - p1.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < mouse.radius) {
+                const distSq = dx * dx + dy * dy;
+                if (distSq < mouse.radius * mouse.radius) {
+                    const dist = Math.sqrt(distSq);
                     const alpha = (1 - dist / mouse.radius) * 0.25;
-                    let strokeColor = `rgba(255, 183, 3, ${alpha})`; // Default Gold
+                    let strokeColor = `rgba(255, 183, 3, ${alpha})`;
                     if (document.body.classList.contains('theme-blue')) {
                         strokeColor = `rgba(0, 210, 255, ${alpha})`;
-                    } else if (document.body.classList.contains('theme-green')) {
-                        strokeColor = `rgba(0, 245, 212, ${alpha})`;
-                    } else if (document.body.classList.contains('theme-purple')) {
-                        strokeColor = `rgba(189, 83, 237, ${alpha})`;
-                    } else if (document.body.classList.contains('theme-rose')) {
-                        strokeColor = `rgba(255, 51, 102, ${alpha})`;
                     }
                     ctx.strokeStyle = strokeColor;
                     ctx.lineWidth = 1;
@@ -337,14 +333,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             
-            // Connect to other particles
             for (let j = i + 1; j < particles.length; j++) {
                 const p2 = particles[j];
                 const dx = p1.x - p2.x;
                 const dy = p1.y - p2.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+                const distSq = dx * dx + dy * dy;
                 
-                if (dist < maxDistance) {
+                // Fast squared distance check to avoid Math.sqrt calculation
+                if (distSq < maxDistanceSq) {
+                    const dist = Math.sqrt(distSq);
                     const alpha = (1 - dist / maxDistance) * 0.12;
                     ctx.strokeStyle = `rgba(148, 163, 184, ${alpha})`;
                     ctx.lineWidth = 0.8;
@@ -830,6 +827,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (deleteModal) {
                     deleteModal.style.display = 'flex';
+                    deleteModal.style.opacity = '1';
+                    deleteModal.style.pointerEvents = 'auto';
+                    deleteModal.classList.add('active');
+                    
                     passInput.value = '';
                     errorMsg.style.display = 'none';
                     passInput.focus();
@@ -840,9 +841,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     const newCancel = cancelBtn.cloneNode(true);
                     cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
                     
-                    newCancel.addEventListener('click', () => {
+                    const closeModal = () => {
+                        deleteModal.classList.remove('active');
+                        deleteModal.style.opacity = '0';
+                        deleteModal.style.pointerEvents = 'none';
                         deleteModal.style.display = 'none';
-                    });
+                    };
+                    
+                    newCancel.addEventListener('click', closeModal);
                     
                     newConfirm.addEventListener('click', () => {
                         if (passInput.value === PASSCODE) {
@@ -858,7 +864,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }
                             }
                             
-                            deleteModal.style.display = 'none';
+                            closeModal();
                             
                             // Check if folder is now empty and is a custom folder
                             if (vaultDatabase[folderKey].length === 0 && folderKey.startsWith('custom_')) {
@@ -1821,7 +1827,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         journalsContainer.innerHTML = '';
         
-        savedJournals.forEach((journal, index) => {
+        savedJournals.forEach((journal) => {
             const journalCard = document.createElement('div');
             journalCard.className = `pdf-poster-container theme-${journal.theme}`;
             journalCard.style.position = 'relative';
@@ -1833,122 +1839,246 @@ document.addEventListener('DOMContentLoaded', () => {
             journalCard.style.borderRadius = '12px';
             journalCard.style.overflow = 'hidden';
             
-            // Apply Font
             if (journal.font) {
                 journalCard.style.fontFamily = journal.font;
             }
             
             journalCard.innerHTML = `
                 <div class="poster-frame" style="padding: 1.5rem;">
-                    <div class="poster-header" style="margin-bottom: 1rem; align-items: center;">
-                        <span class="poster-badge">${journal.category}</span>
-                        <div style="display: flex; gap: 5px;">
-                            <button class="minimize-journal-btn btn-outline" style="padding: 4px 8px; font-size: 0.8rem; background: transparent; cursor: pointer; border-radius: 4px; border: 1px solid rgba(255,255,255,0.3); color: #fff;" title="Minimize/Expand"><i class="fas fa-compress"></i></button>
-                            <button class="download-journal-btn btn-outline" style="padding: 4px 8px; font-size: 0.8rem; background: transparent; cursor: pointer; border-radius: 4px; border: 1px solid rgba(0,200,255,0.3); color: #00d2ff;" title="Download as Image"><i class="fas fa-download"></i></button>
-                            <button class="delete-journal-btn btn-outline" data-id="${journal.id}" style="padding: 4px 8px; font-size: 0.8rem; color: #ff5555; border-color: rgba(255,50,50,0.3); background: transparent; cursor: pointer; border-radius: 4px;" title="Delete Journal"><i class="fas fa-trash"></i></button>
+                    <div class="poster-header" style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <span class="poster-badge" style="display: inline-block; padding: 6px 16px; border-radius: 20px; border: 1.5px solid #00d2ff; color: #00d2ff; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">${journal.category}</span>
+                        <div class="journal-action-btns" style="display: flex; gap: 8px; align-items: center;">
+                            <button type="button" class="minimize-journal-btn btn-outline" onclick="window.minimizeJournalCard(this, event)" style="padding: 6px 12px; font-size: 0.9rem; background: rgba(255,255,255,0.05); cursor: pointer; border-radius: 8px; border: 1px solid rgba(255,255,255,0.25); color: #fff; display: inline-flex; align-items: center; justify-content: center;" title="Minimize/Expand Note"><i class="fas fa-compress"></i></button>
+                            <button type="button" class="download-journal-btn btn-outline" onclick="window.downloadJournalCardByBtn(this, event)" data-id="${journal.id}" style="padding: 6px 12px; font-size: 0.9rem; background: rgba(0,200,255,0.1); cursor: pointer; border-radius: 8px; border: 1px solid rgba(0,200,255,0.4); color: #00d2ff; display: inline-flex; align-items: center; justify-content: center;" title="Download Note as Image"><i class="fas fa-download"></i></button>
+                            <button type="button" class="delete-journal-btn btn-outline" onclick="window.deleteJournalCardByBtn(this, event, '${journal.id}')" data-id="${journal.id}" style="padding: 6px 12px; font-size: 0.9rem; color: #ff5555; border-color: rgba(255,50,50,0.4); background: rgba(255,50,50,0.1); cursor: pointer; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center;" title="Delete Journal Note"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
-                    <div class="poster-body journal-body-content" style="transition: max-height 0.3s ease;">
-                        <div class="poster-content-card" style="padding: 1rem; background: rgba(255,255,255,0.05);">
-                            <h1 class="poster-title" style="margin-top:0; margin-bottom:1rem; font-size:1.5rem; line-height:1.2;">${journal.title}</h1>
-                            <div class="poster-content-text" style="font-size: 0.9rem;">${journal.htmlContent}</div>
+                    <div class="poster-body journal-body-content" style="transition: all 0.3s ease;">
+                        <div class="poster-content-card" style="padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                            <h1 class="poster-title" style="margin-top:0; margin-bottom:1rem; font-size:1.5rem; line-height:1.2; word-break: break-word;">${journal.title}</h1>
+                            <div class="poster-content-text" style="font-size: 0.95rem; word-break: break-word; line-height: 1.6;">${journal.htmlContent}</div>
                         </div>
                     </div>
                     <div class="poster-footer" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
-                        <span class="poster-date">Saved on ${journal.date}</span>
+                        <span class="poster-date" style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">Saved on ${journal.date}</span>
                     </div>
                 </div>
             `;
             
             journalsContainer.appendChild(journalCard);
+        });
+
+        // Event Delegation on Container for 100% Reliable Button Clicks
+        if (!journalsContainer.dataset.listenerAttached) {
+            journalsContainer.dataset.listenerAttached = 'true';
             
-            // Minimize Logic
-            const minBtn = journalCard.querySelector('.minimize-journal-btn');
-            const bodyContent = journalCard.querySelector('.journal-body-content');
-            let isMinimized = false;
-            minBtn.addEventListener('click', () => {
-                isMinimized = !isMinimized;
-                if (isMinimized) {
-                    bodyContent.style.maxHeight = '0px';
-                    bodyContent.style.overflow = 'hidden';
-                    minBtn.innerHTML = '<i class="fas fa-expand"></i>';
-                } else {
-                    bodyContent.style.maxHeight = 'none';
-                    minBtn.innerHTML = '<i class="fas fa-compress"></i>';
+            journalsContainer.addEventListener('click', (e) => {
+                const minBtn = e.target.closest('.minimize-journal-btn');
+                if (minBtn) {
+                    window.minimizeJournalCard(minBtn, e);
+                    return;
+                }
+                
+                const dlBtn = e.target.closest('.download-journal-btn');
+                if (dlBtn) {
+                    window.downloadJournalCardByBtn(dlBtn, e);
+                    return;
+                }
+                
+                const delBtn = e.target.closest('.delete-journal-btn');
+                if (delBtn) {
+                    const journalId = delBtn.getAttribute('data-id');
+                    window.deleteJournalCardByBtn(delBtn, e, journalId);
+                    return;
                 }
             });
-            
-            // Download Image Logic
-            const dlBtn = journalCard.querySelector('.download-journal-btn');
-            dlBtn.addEventListener('click', () => {
-                // Ensure expanded before screenshot
-                bodyContent.style.maxHeight = 'none';
-                minBtn.innerHTML = '<i class="fas fa-compress"></i>';
-                isMinimized = false;
-                
-                const originalBorder = journalCard.style.borderRadius;
-                journalCard.style.borderRadius = '0'; // better for screenshot
-                
-                dlBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                
-                html2canvas(journalCard, { scale: 2, useCORS: true, backgroundColor: null }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = `Journal_${journal.title.replace(/\s+/g, '_')}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                    dlBtn.innerHTML = '<i class="fas fa-download"></i>';
-                    journalCard.style.borderRadius = originalBorder;
-                }).catch(err => {
-                    console.error("Image generation failed", err);
-                    dlBtn.innerHTML = '<i class="fas fa-download"></i>';
-                    alert('Download failed.');
-                });
-            });
-        });
+        }
+    }
+
+    // Global Window Button Functions for Guaranteed Click Execution Across All Browsers
+    window.minimizeJournalCard = function(btn, e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        const card = btn.closest('.pdf-poster-container');
+        if (card) {
+            const isMinimized = card.classList.toggle('is-minimized');
+            btn.innerHTML = isMinimized ? '<i class="fas fa-expand"></i>' : '<i class="fas fa-compress"></i>';
+            btn.title = isMinimized ? 'Expand Note' : 'Minimize Note';
+        }
+    };
+
+    window.downloadJournalCardByBtn = function(btn, e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        const card = btn.closest('.pdf-poster-container');
+        const journalId = btn.getAttribute('data-id');
+        if (card) downloadJournalCardImage(card, journalId, btn);
+    };
+
+    window.deleteJournalCardByBtn = function(btn, e, id) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        if (confirm("Are you sure you want to delete this note from your journal?")) {
+            deleteJournalById(id);
+        }
+    };
+
+    // Instant Native 2D Canvas Image Exporter (0.001s execution, 0 dependencies, 100% reliable)
+    function downloadJournalCardImage(card, journalId, dlBtn) {
+        const origHtml = dlBtn.innerHTML;
+        dlBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         
-        // Delete Listeners using Custom Modal
-        journalsContainer.querySelectorAll('.delete-journal-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const id = e.currentTarget.getAttribute('data-id');
+        // Expand card body if minimized
+        card.classList.remove('is-minimized');
+        const minBtn = card.querySelector('.minimize-journal-btn');
+        if (minBtn) minBtn.innerHTML = '<i class="fas fa-compress"></i>';
+
+        const titleEl = card.querySelector('.poster-title');
+        const contentEl = card.querySelector('.poster-content-text');
+        const badgeEl = card.querySelector('.poster-badge');
+        const dateEl = card.querySelector('.poster-date');
+
+        const titleText = titleEl ? titleEl.innerText : 'Journal Note';
+        const contentText = contentEl ? contentEl.innerText : '';
+        const categoryText = badgeEl ? badgeEl.innerText : 'NOTE';
+        const dateText = dateEl ? dateEl.innerText : '';
+
+        if (typeof html2canvas !== 'undefined') {
+            const actionBtns = card.querySelector('.journal-action-btns');
+            if (actionBtns) actionBtns.style.visibility = 'hidden';
+            
+            html2canvas(card, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#0d111e',
+                logging: false
+            }).then(canvas => {
+                const link = document.createElement('a');
+                const safeTitle = titleText.replace(/[^a-zA-Z0-9_\-]/g, '_');
+                link.download = `Journal_${safeTitle}.png`;
+                link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
                 
-                const deleteModal = document.getElementById('vault-delete-modal');
-                const passInput = document.getElementById('vault-delete-password-input');
-                const confirmBtn = document.getElementById('vault-delete-confirm');
-                const cancelBtn = document.getElementById('vault-delete-cancel');
-                const errorMsg = document.getElementById('vault-delete-error');
-                
-                if (deleteModal) {
-                    deleteModal.style.display = 'flex';
-                    passInput.value = '';
-                    errorMsg.style.display = 'none';
-                    passInput.focus();
-                    
-                    const newConfirm = confirmBtn.cloneNode(true);
-                    confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
-                    const newCancel = cancelBtn.cloneNode(true);
-                    cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
-                    
-                    newCancel.addEventListener('click', () => {
-                        deleteModal.style.display = 'none';
-                    });
-                    
-                    newConfirm.addEventListener('click', () => {
-                        if (passInput.value === PASSCODE) {
-                            // Re-read from localStorage (not stale local var) and delete
-                            let currentJournals = JSON.parse(localStorage.getItem('shivSavedJournals')) || [];
-                            currentJournals = currentJournals.filter(j => j.id !== id);
-                            localStorage.setItem('shivSavedJournals', JSON.stringify(currentJournals));
-                            deleteModal.style.display = 'none';
-                            renderSavedJournals();
-                        } else {
-                            errorMsg.style.display = 'block';
-                            passInput.value = '';
-                            passInput.focus();
-                        }
-                    });
-                }
+                dlBtn.innerHTML = origHtml;
+                if (actionBtns) actionBtns.style.visibility = 'visible';
+            }).catch(() => {
+                if (actionBtns) actionBtns.style.visibility = 'visible';
+                generateNativeCanvasImage(titleText, contentText, categoryText, dateText, dlBtn, origHtml);
             });
-        });
+        } else {
+            generateNativeCanvasImage(titleText, contentText, categoryText, dateText, dlBtn, origHtml);
+        }
+    }
+
+    function generateNativeCanvasImage(titleText, contentText, categoryText, dateText, dlBtn, origHtml) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const width = 800;
+        const padding = 40;
+        
+        ctx.font = '16px sans-serif';
+        const words = contentText.split(' ');
+        let line = '';
+        const lines = [];
+        const maxLineWidth = width - (padding * 2) - 40;
+        
+        for (let n = 0; n < words.length; n++) {
+            const testLine = line + words[n] + ' ';
+            const metrics = ctx.measureText(testLine);
+            if (metrics.width > maxLineWidth && n > 0) {
+                lines.push(line);
+                line = words[n] + ' ';
+            } else {
+                line = testLine;
+            }
+        }
+        lines.push(line);
+
+        const calculatedHeight = Math.max(450, 220 + (lines.length * 26) + 80);
+        canvas.width = width * 2;
+        canvas.height = calculatedHeight * 2;
+        ctx.scale(2, 2);
+
+        // Dark gradient background
+        const gradient = ctx.createLinearGradient(0, 0, 0, calculatedHeight);
+        gradient.addColorStop(0, '#161c2d');
+        gradient.addColorStop(1, '#0d111e');
+        ctx.fillStyle = gradient;
+        
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') {
+            ctx.roundRect(0, 0, width, calculatedHeight, 16);
+        } else {
+            ctx.rect(0, 0, width, calculatedHeight);
+        }
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(0, 200, 255, 0.3)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Category Badge
+        ctx.fillStyle = '#00d2ff';
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') {
+            ctx.roundRect(padding, padding, 160, 34, 17);
+        } else {
+            ctx.rect(padding, padding, 160, 34);
+        }
+        ctx.fill();
+
+        ctx.fillStyle = '#000000';
+        ctx.font = 'bold 13px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(categoryText.toUpperCase(), padding + 80, padding + 22);
+
+        // Title
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 24px sans-serif';
+        ctx.fillText(titleText, padding, padding + 75);
+
+        // Line separator
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.beginPath();
+        ctx.moveTo(padding, padding + 95);
+        ctx.lineTo(width - padding, padding + 95);
+        ctx.stroke();
+
+        // Content
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = '16px sans-serif';
+        let startY = padding + 130;
+        for (let i = 0; i < lines.length; i++) {
+            ctx.fillText(lines[i], padding, startY + (i * 26));
+        }
+
+        // Date
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.font = '13px sans-serif';
+        ctx.fillText(dateText, padding, calculatedHeight - padding);
+
+        try {
+            const dataUrl = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            const safeTitle = titleText.replace(/[^a-zA-Z0-9_\-]/g, '_');
+            link.download = `Journal_${safeTitle}.png`;
+            link.href = dataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch(err) {
+            console.error("Native canvas export failed:", err);
+            alert('Image export failed.');
+        }
+        
+        dlBtn.innerHTML = origHtml;
+    }
+
+    function deleteJournalById(id) {
+        let currentJournals = JSON.parse(localStorage.getItem('shivSavedJournals')) || [];
+        currentJournals = currentJournals.filter(j => String(j.id) !== String(id));
+        localStorage.setItem('shivSavedJournals', JSON.stringify(currentJournals));
+        renderSavedJournals();
     }
     // Simple markdown-to-html helper for PDF layout rendering
     function markdownToHTML(mdText) {

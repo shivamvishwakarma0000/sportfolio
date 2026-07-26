@@ -4598,3 +4598,126 @@ body.style-terminal .terminal-workspace {
         font-size: 1.4rem;
     }
 }
+
+/* ==========================================================================
+   Comprehensive Device Responsiveness & Journal Action Buttons
+   ========================================================================== */
+.journal-action-btns {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.journal-action-btns button {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transition, all 0.3s ease);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.journal-action-btns button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+@media (max-width: 992px) {
+    .container {
+        width: 92%;
+        padding: 0 1rem;
+    }
+    
+    .hero-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 2rem;
+    }
+    
+    .hero-image-wrapper {
+        margin: 0 auto;
+        max-width: 320px;
+    }
+
+    .hero-cta-group {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        font-size: 0.95rem;
+    }
+
+    /* Modal dialogs centered & responsive */
+    .vault-modal-card,
+    #vault-delete-modal .glass-card {
+        width: 92% !important;
+        max-width: 440px !important;
+        padding: 1.5rem !important;
+        margin: auto;
+    }
+
+    /* Saved Journal Headers on Mobile */
+    .poster-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .journal-action-btns button {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .poster-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .journal-action-btns {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .form-control, 
+    input[type="text"], 
+    input[type="password"], 
+    textarea, 
+    select {
+        font-size: 16px !important; /* Prevents iOS auto-zoom */
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .hero-cta-group {
+        flex-direction: column;
+        width: 100%;
+    }
+}
+
+/* Minimized State for Journal Poster Cards */
+.pdf-poster-container.is-minimized .poster-body,
+.pdf-poster-container.is-minimized .poster-footer {
+    display: none !important;
+}
+
+.pdf-poster-container.is-minimized .poster-frame {
+    padding: 0.8rem 1.2rem !important;
+}
+
+.pdf-poster-container.is-minimized .poster-header {
+    margin-bottom: 0 !important;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+}
