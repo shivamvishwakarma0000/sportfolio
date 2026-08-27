@@ -1,3 +1,11 @@
+# Operating System & IDE Files
 .DS_Store
 assets/.DS_Store
 .idea/
+.vscode/
+
+# Sensitive Personal Documents Protection (Uncomment or add specific private PDFs to prevent pushing to public Git)
+# assets/Aadhar_Card_Shivam.pdf
+# assets/AAPAR.pdf
+# assets/Caste_Certificate_Shivam.pdf
+# assets/Transfer_Certificate_School.pdf
