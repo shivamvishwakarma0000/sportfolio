@@ -627,16 +627,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
     let customVaultFolders = JSON.parse(localStorage.getItem('shivCustomFolders')) || [];
     let customVaultFiles = JSON.parse(localStorage.getItem('shivCustomFiles')) || {};
+    let deletedDefaultFolders = JSON.parse(localStorage.getItem('shivDeletedDefaultFolders')) || [];
+
+    const foldersGrid = document.querySelector('.folders-grid');
+    const addNewFolderBtn = document.getElementById('add-new-folder-btn');
     
+    // Clean up any default folder marked as deleted
+    if (foldersGrid && deletedDefaultFolders.length > 0) {
+        document.querySelectorAll('.folder-card[data-folder]').forEach(card => {
+            const key = card.getAttribute('data-folder');
+            if (deletedDefaultFolders.includes(key)) {
+                card.remove();
+            }
+        });
+    }
+
     // Merge custom files into vaultDatabase
     for (const key in customVaultFiles) {
         if (!vaultDatabase[key]) vaultDatabase[key] = [];
         vaultDatabase[key] = vaultDatabase[key].concat(customVaultFiles[key]);
     }
 
-    const foldersGrid = document.querySelector('.folders-grid');
-    const addNewFolderBtn = document.getElementById('add-new-folder-btn');
-    
     // Render custom folders to DOM
     if (foldersGrid && addNewFolderBtn) {
         customVaultFolders.forEach(folder => {
@@ -712,11 +723,215 @@ document.addEventListener('DOMContentLoaded', () => {
         lockVaultBtn.addEventListener('click', lockVault);
     }
 
+    // ----------------------------------------------------
+    // Action Toast Notification Helper
+    // ----------------------------------------------------
+    function showVaultToast(message, icon = 'check-circle') {
+        let toast = document.getElementById('vault-action-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'vault-action-toast';
+            document.body.appendChild(toast);
+        }
+        toast.innerHTML = `<i class="fas fa-${icon}"></i> <span>${message}</span>`;
+        toast.className = 'vault-toast-show';
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => {
+            toast.className = '';
+        }, 2800);
+    }
+    window.showVaultToast = showVaultToast;
+
+    // ----------------------------------------------------
+    // FOLDER LONG-PRESS TO DELETE LOGIC
+    // ----------------------------------------------------
+    let folderLongPressTimer = null;
+    let isFolderLongPressActive = false;
+    let targetFolderToDelete = null; // { card, key, name }
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    const folderDeleteModal = document.getElementById('folder-delete-modal');
+    const deleteFolderNameEl = document.getElementById('delete-folder-target-name');
+    const cancelDeleteFolderBtn = document.getElementById('cancel-delete-folder-btn');
+    const confirmDeleteFolderBtn = document.getElementById('confirm-delete-folder-btn');
+
+    function openFolderDeleteModal(card) {
+        if (!card || card.id === 'add-new-folder-btn') return;
+        const key = card.getAttribute('data-folder');
+        const nameEl = card.querySelector('.folder-name');
+        const name = nameEl ? nameEl.textContent.trim() : key;
+
+        targetFolderToDelete = { card, key, name };
+        if (deleteFolderNameEl) deleteFolderNameEl.textContent = `"${name}"`;
+        if (folderDeleteModal) folderDeleteModal.classList.add('active');
+    }
+
+    if (foldersGrid) {
+        // Touch events for mobile long press
+        foldersGrid.addEventListener('touchstart', (e) => {
+            const card = e.target.closest('.folder-card:not(#add-new-folder-btn)');
+            if (!card) return;
+
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            isFolderLongPressActive = false;
+
+            card.classList.add('folder-longpress-holding');
+
+            clearTimeout(folderLongPressTimer);
+            folderLongPressTimer = setTimeout(() => {
+                isFolderLongPressActive = true;
+                card.classList.remove('folder-longpress-holding');
+                if (navigator.vibrate) navigator.vibrate(60);
+                openFolderDeleteModal(card);
+            }, 500);
+        }, { passive: true });
+
+        foldersGrid.addEventListener('touchmove', (e) => {
+            if (!folderLongPressTimer) return;
+            const touch = e.touches[0];
+            const dx = Math.abs(touch.clientX - touchStartX);
+            const dy = Math.abs(touch.clientY - touchStartY);
+            if (dx > 10 || dy > 10) {
+                clearTimeout(folderLongPressTimer);
+                folderLongPressTimer = null;
+                document.querySelectorAll('.folder-longpress-holding').forEach(c => c.classList.remove('folder-longpress-holding'));
+            }
+        }, { passive: true });
+
+        foldersGrid.addEventListener('touchend', (e) => {
+            clearTimeout(folderLongPressTimer);
+            folderLongPressTimer = null;
+            document.querySelectorAll('.folder-longpress-holding').forEach(c => c.classList.remove('folder-longpress-holding'));
+            if (isFolderLongPressActive) {
+                e.preventDefault();
+            }
+        });
+
+        foldersGrid.addEventListener('touchcancel', () => {
+            clearTimeout(folderLongPressTimer);
+            folderLongPressTimer = null;
+            document.querySelectorAll('.folder-longpress-holding').forEach(c => c.classList.remove('folder-longpress-holding'));
+        });
+
+        // Desktop mouse hold events
+        foldersGrid.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return;
+            const card = e.target.closest('.folder-card:not(#add-new-folder-btn)');
+            if (!card) return;
+
+            isFolderLongPressActive = false;
+            card.classList.add('folder-longpress-holding');
+
+            clearTimeout(folderLongPressTimer);
+            folderLongPressTimer = setTimeout(() => {
+                isFolderLongPressActive = true;
+                card.classList.remove('folder-longpress-holding');
+                openFolderDeleteModal(card);
+            }, 550);
+        });
+
+        foldersGrid.addEventListener('mousemove', (e) => {
+            if (folderLongPressTimer && (Math.abs(e.movementX) > 4 || Math.abs(e.movementY) > 4)) {
+                clearTimeout(folderLongPressTimer);
+                folderLongPressTimer = null;
+                document.querySelectorAll('.folder-longpress-holding').forEach(c => c.classList.remove('folder-longpress-holding'));
+            }
+        });
+
+        foldersGrid.addEventListener('mouseup', () => {
+            clearTimeout(folderLongPressTimer);
+            folderLongPressTimer = null;
+            document.querySelectorAll('.folder-longpress-holding').forEach(c => c.classList.remove('folder-longpress-holding'));
+        });
+
+        foldersGrid.addEventListener('mouseleave', () => {
+            clearTimeout(folderLongPressTimer);
+            folderLongPressTimer = null;
+            document.querySelectorAll('.folder-longpress-holding').forEach(c => c.classList.remove('folder-longpress-holding'));
+        });
+
+        // Right-click contextmenu on desktop
+        foldersGrid.addEventListener('contextmenu', (e) => {
+            const card = e.target.closest('.folder-card:not(#add-new-folder-btn)');
+            if (card) {
+                e.preventDefault();
+                openFolderDeleteModal(card);
+            }
+        });
+    }
+
+    // Modal Confirmation Actions
+    if (confirmDeleteFolderBtn) {
+        confirmDeleteFolderBtn.addEventListener('click', () => {
+            if (!targetFolderToDelete) return;
+            const { card, key, name } = targetFolderToDelete;
+
+            // Check if custom folder
+            let customFolders = JSON.parse(localStorage.getItem('shivCustomFolders')) || [];
+            const isCustom = customFolders.some(f => f.key === key);
+
+            if (isCustom) {
+                customFolders = customFolders.filter(f => f.key !== key);
+                localStorage.setItem('shivCustomFolders', JSON.stringify(customFolders));
+                customVaultFolders = customFolders;
+
+                let customFiles = JSON.parse(localStorage.getItem('shivCustomFiles')) || {};
+                delete customFiles[key];
+                localStorage.setItem('shivCustomFiles', JSON.stringify(customFiles));
+            } else {
+                let deletedDefaults = JSON.parse(localStorage.getItem('shivDeletedDefaultFolders')) || [];
+                if (!deletedDefaults.includes(key)) {
+                    deletedDefaults.push(key);
+                    localStorage.setItem('shivDeletedDefaultFolders', JSON.stringify(deletedDefaults));
+                }
+            }
+
+            delete vaultDatabase[key];
+
+            card.style.transition = 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
+            card.style.transform = 'scale(0.2)';
+            card.style.opacity = '0';
+            setTimeout(() => {
+                if (card.parentNode) card.parentNode.removeChild(card);
+            }, 350);
+
+            if (folderDeleteModal) folderDeleteModal.classList.remove('active');
+            targetFolderToDelete = null;
+            showVaultToast(`Folder "${name}" deleted`, 'trash');
+        });
+    }
+
+    if (cancelDeleteFolderBtn) {
+        cancelDeleteFolderBtn.addEventListener('click', () => {
+            if (folderDeleteModal) folderDeleteModal.classList.remove('active');
+            targetFolderToDelete = null;
+        });
+    }
+
+    if (folderDeleteModal) {
+        folderDeleteModal.addEventListener('click', (e) => {
+            if (e.target === folderDeleteModal) {
+                folderDeleteModal.classList.remove('active');
+                targetFolderToDelete = null;
+            }
+        });
+    }
+
     // Folder Grid Click Event (Event Delegation for dynamic folders)
     let currentActiveFolderKey = null;
 
     if (foldersGrid) {
         foldersGrid.addEventListener('click', (e) => {
+            if (isFolderLongPressActive) {
+                isFolderLongPressActive = false;
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
+
             const folderCard = e.target.closest('.folder-card');
             
             // Handle Add New Folder
@@ -746,6 +961,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="folder-name">${cleanName}</span>
                     `;
                     foldersGrid.insertBefore(newFolderCard, addNewFolderBtn);
+                    showVaultToast(`Folder "${cleanName}" created!`);
                 }
                 return;
             }
@@ -1314,6 +1530,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadFeedbacksFromStorage();
         renderNotes();
         renderFeedbacks();
+        renderSavedJournals();
         
         // Load API Settings input
         if (geminiKeyInput) {
@@ -1464,6 +1681,7 @@ document.addEventListener('DOMContentLoaded', () => {
             notesListView.style.display = 'block';
             noteEditView.style.display = 'none';
             renderNotes();
+            renderSavedJournals();
         } else if (tabName === 'received-feedbacks') {
             renderFeedbacks();
         }
@@ -1480,6 +1698,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             notesListView.style.display = 'none';
             noteEditView.style.display = 'block';
+            renderSavedJournals();
         });
     }
 
@@ -1487,6 +1706,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cancelNoteBtn.addEventListener('click', () => {
             notesListView.style.display = 'block';
             noteEditView.style.display = 'none';
+            renderSavedJournals();
         });
     }
 
@@ -1816,12 +2036,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function renderSavedJournals() {
         const journalsContainer = document.getElementById('f-saved-journals-list');
+        const badgeEl = document.getElementById('journal-count-badge');
         if (!journalsContainer) return;
         
         let savedJournals = JSON.parse(localStorage.getItem('shivSavedJournals')) || [];
+        if (badgeEl) badgeEl.textContent = `${savedJournals.length} Note${savedJournals.length === 1 ? '' : 's'}`;
         
         if (savedJournals.length === 0) {
-            journalsContainer.innerHTML = '<p style="color: rgba(255,255,255,0.4); text-align: center; padding: 2rem;">No journals saved yet. Write a note and save it to your journal!</p>';
+            journalsContainer.innerHTML = '<p style="color: rgba(255,255,255,0.4); text-align: center; padding: 2rem;">No journals saved yet. Write a note and click "Save to Journal"!</p>';
             return;
         }
         
@@ -1829,106 +2051,114 @@ document.addEventListener('DOMContentLoaded', () => {
         
         savedJournals.forEach((journal) => {
             const journalCard = document.createElement('div');
-            journalCard.className = `pdf-poster-container theme-${journal.theme}`;
-            journalCard.style.position = 'relative';
-            journalCard.style.width = '100%';
-            journalCard.style.height = 'auto';
-            journalCard.style.marginBottom = '1.5rem';
-            journalCard.style.transform = 'none';
-            journalCard.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
-            journalCard.style.borderRadius = '12px';
-            journalCard.style.overflow = 'hidden';
+            journalCard.className = `pdf-poster-container theme-${journal.theme} journal-card-item`;
+            journalCard.setAttribute('data-journal-id', journal.id);
             
             if (journal.font) {
                 journalCard.style.fontFamily = journal.font;
             }
             
             journalCard.innerHTML = `
-                <div class="poster-frame" style="padding: 1.5rem;">
-                    <div class="poster-header" style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                        <span class="poster-badge" style="display: inline-block; padding: 6px 16px; border-radius: 20px; border: 1.5px solid #00d2ff; color: #00d2ff; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">${journal.category}</span>
-                        <div class="journal-action-btns" style="display: flex; gap: 8px; align-items: center;">
-                            <button type="button" class="minimize-journal-btn btn-outline" onclick="window.minimizeJournalCard(this, event)" style="padding: 6px 12px; font-size: 0.9rem; background: rgba(255,255,255,0.05); cursor: pointer; border-radius: 8px; border: 1px solid rgba(255,255,255,0.25); color: #fff; display: inline-flex; align-items: center; justify-content: center;" title="Minimize/Expand Note"><i class="fas fa-compress"></i></button>
-                            <button type="button" class="download-journal-btn btn-outline" onclick="window.downloadJournalCardByBtn(this, event)" data-id="${journal.id}" style="padding: 6px 12px; font-size: 0.9rem; background: rgba(0,200,255,0.1); cursor: pointer; border-radius: 8px; border: 1px solid rgba(0,200,255,0.4); color: #00d2ff; display: inline-flex; align-items: center; justify-content: center;" title="Download Note as Image"><i class="fas fa-download"></i></button>
-                            <button type="button" class="delete-journal-btn btn-outline" onclick="window.deleteJournalCardByBtn(this, event, '${journal.id}')" data-id="${journal.id}" style="padding: 6px 12px; font-size: 0.9rem; color: #ff5555; border-color: rgba(255,50,50,0.4); background: rgba(255,50,50,0.1); cursor: pointer; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center;" title="Delete Journal Note"><i class="fas fa-trash"></i></button>
+                <div class="poster-frame">
+                    <div class="poster-header">
+                        <span class="poster-badge" title="${escapeHTML(journal.category)}">${escapeHTML(journal.category)}</span>
+                        <div class="journal-action-btns">
+                            <button type="button" class="expand-journal-btn" onclick="window.toggleExpandJournalCard(this, event)" title="Expand to Fullscreen"><i class="fas fa-expand"></i> <span class="expand-btn-text">Expand</span></button>
+                            <button type="button" class="download-journal-btn" onclick="window.downloadJournalCardByBtn(this, event)" data-id="${journal.id}" title="Download Note as Image"><i class="fas fa-download"></i> <span class="dl-btn-text">Download</span></button>
+                            <button type="button" class="delete-journal-btn" onclick="window.deleteJournalCardByBtn(this, event, '${journal.id}')" data-id="${journal.id}" title="Delete Journal Note"><i class="fas fa-trash"></i> <span class="del-btn-text">Delete</span></button>
                         </div>
                     </div>
-                    <div class="poster-body journal-body-content" style="transition: all 0.3s ease;">
-                        <div class="poster-content-card" style="padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                            <h1 class="poster-title" style="margin-top:0; margin-bottom:1rem; font-size:1.5rem; line-height:1.2; word-break: break-word;">${journal.title}</h1>
-                            <div class="poster-content-text" style="font-size: 0.95rem; word-break: break-word; line-height: 1.6;">${journal.htmlContent}</div>
+                    <div class="poster-body journal-body-content">
+                        <div class="poster-content-card">
+                            <h1 class="poster-title">${escapeHTML(journal.title)}</h1>
+                            <div class="poster-content-text">${journal.htmlContent}</div>
                         </div>
                     </div>
-                    <div class="poster-footer" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
-                        <span class="poster-date" style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">Saved on ${journal.date}</span>
+                    <div class="poster-footer">
+                        <span class="poster-date"><i class="fas fa-calendar-alt"></i> Saved on ${journal.date}</span>
+                    </div>
+                    <div class="expanded-reader-footer-actions">
+                        <button type="button" onclick="window.toggleExpandJournalCard(this, event)"><i class="fas fa-compress"></i> Reduce to Normal View</button>
                     </div>
                 </div>
             `;
             
             journalsContainer.appendChild(journalCard);
         });
-
-        // Event Delegation on Container for 100% Reliable Button Clicks
-        if (!journalsContainer.dataset.listenerAttached) {
-            journalsContainer.dataset.listenerAttached = 'true';
-            
-            journalsContainer.addEventListener('click', (e) => {
-                const minBtn = e.target.closest('.minimize-journal-btn');
-                if (minBtn) {
-                    window.minimizeJournalCard(minBtn, e);
-                    return;
-                }
-                
-                const dlBtn = e.target.closest('.download-journal-btn');
-                if (dlBtn) {
-                    window.downloadJournalCardByBtn(dlBtn, e);
-                    return;
-                }
-                
-                const delBtn = e.target.closest('.delete-journal-btn');
-                if (delBtn) {
-                    const journalId = delBtn.getAttribute('data-id');
-                    window.deleteJournalCardByBtn(delBtn, e, journalId);
-                    return;
-                }
-            });
-        }
     }
 
-    // Global Window Button Functions for Guaranteed Click Execution Across All Browsers
-    window.minimizeJournalCard = function(btn, e) {
+    // Toggle Expand (Fullscreen Reader Mode) / Reduce
+    window.toggleExpandJournalCard = function(btn, e) {
         if (e) { e.preventDefault(); e.stopPropagation(); }
-        const card = btn.closest('.pdf-poster-container');
-        if (card) {
-            const isMinimized = card.classList.toggle('is-minimized');
-            btn.innerHTML = isMinimized ? '<i class="fas fa-expand"></i>' : '<i class="fas fa-compress"></i>';
-            btn.title = isMinimized ? 'Expand Note' : 'Minimize Note';
+        const card = btn.closest('.journal-card-item') || btn.closest('.pdf-poster-container');
+        if (!card) return;
+
+        const isNowExpanded = card.classList.toggle('is-expanded-screen');
+        const expandBtn = card.querySelector('.expand-journal-btn');
+
+        if (isNowExpanded) {
+            document.body.style.overflow = 'hidden';
+            if (expandBtn) {
+                expandBtn.innerHTML = '<i class="fas fa-compress"></i> <span class="expand-btn-text">Reduce</span>';
+                expandBtn.title = 'Reduce / Exit Fullscreen';
+                expandBtn.style.background = 'rgba(255,255,255,0.18)';
+            }
+            card.scrollTop = 0;
+            showVaultToast('Expanded to Fullscreen Reader Mode. Tap Reduce to exit.', 'expand');
+        } else {
+            document.body.style.overflow = '';
+            if (expandBtn) {
+                expandBtn.innerHTML = '<i class="fas fa-expand"></i> <span class="expand-btn-text">Expand</span>';
+                expandBtn.title = 'Expand to Fullscreen';
+                expandBtn.style.background = '';
+            }
         }
     };
 
+    // Close expanded journal on Escape key
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const expandedCard = document.querySelector('.journal-card-item.is-expanded-screen');
+            if (expandedCard) {
+                const btn = expandedCard.querySelector('.expand-journal-btn');
+                if (btn) window.toggleExpandJournalCard(btn, e);
+            }
+        }
+    });
+
+    // Download Journal Card
     window.downloadJournalCardByBtn = function(btn, e) {
         if (e) { e.preventDefault(); e.stopPropagation(); }
-        const card = btn.closest('.pdf-poster-container');
+        const card = btn.closest('.journal-card-item') || btn.closest('.pdf-poster-container');
         const journalId = btn.getAttribute('data-id');
         if (card) downloadJournalCardImage(card, journalId, btn);
     };
 
+    // Delete Journal Card
     window.deleteJournalCardByBtn = function(btn, e, id) {
         if (e) { e.preventDefault(); e.stopPropagation(); }
         if (confirm("Are you sure you want to delete this note from your journal?")) {
-            deleteJournalById(id);
+            const card = btn.closest('.journal-card-item') || btn.closest('.pdf-poster-container');
+            if (card) {
+                if (card.classList.contains('is-expanded-screen')) {
+                    document.body.style.overflow = '';
+                }
+                card.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+            }
+            setTimeout(() => {
+                deleteJournalById(id);
+                showVaultToast("Note deleted from journal", "trash");
+            }, 300);
         }
     };
 
-    // Instant Native 2D Canvas Image Exporter (0.001s execution, 0 dependencies, 100% reliable)
+    // Robust Canvas Image Exporter
     function downloadJournalCardImage(card, journalId, dlBtn) {
         const origHtml = dlBtn.innerHTML;
-        dlBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        
-        // Expand card body if minimized
-        card.classList.remove('is-minimized');
-        const minBtn = card.querySelector('.minimize-journal-btn');
-        if (minBtn) minBtn.innerHTML = '<i class="fas fa-compress"></i>';
+        dlBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        dlBtn.disabled = true;
 
         const titleEl = card.querySelector('.poster-title');
         const contentEl = card.querySelector('.poster-content-text');
@@ -1940,79 +2170,59 @@ document.addEventListener('DOMContentLoaded', () => {
         const categoryText = badgeEl ? badgeEl.innerText : 'NOTE';
         const dateText = dateEl ? dateEl.innerText : '';
 
-        if (typeof html2canvas !== 'undefined') {
-            const actionBtns = card.querySelector('.journal-action-btns');
-            if (actionBtns) actionBtns.style.visibility = 'hidden';
-            
-            html2canvas(card, {
-                scale: 2,
-                useCORS: true,
-                allowTaint: true,
-                backgroundColor: '#0d111e',
-                logging: false
-            }).then(canvas => {
-                const link = document.createElement('a');
-                const safeTitle = titleText.replace(/[^a-zA-Z0-9_\-]/g, '_');
-                link.download = `Journal_${safeTitle}.png`;
-                link.href = canvas.toDataURL('image/png');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                dlBtn.innerHTML = origHtml;
-                if (actionBtns) actionBtns.style.visibility = 'visible';
-            }).catch(() => {
-                if (actionBtns) actionBtns.style.visibility = 'visible';
-                generateNativeCanvasImage(titleText, contentText, categoryText, dateText, dlBtn, origHtml);
-            });
-        } else {
-            generateNativeCanvasImage(titleText, contentText, categoryText, dateText, dlBtn, origHtml);
-        }
+        generateNativeCanvasImage(titleText, contentText, categoryText, dateText, dlBtn, origHtml);
     }
 
     function generateNativeCanvasImage(titleText, contentText, categoryText, dateText, dlBtn, origHtml) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        const width = 800;
-        const padding = 40;
-        
-        ctx.font = '16px sans-serif';
-        const words = contentText.split(' ');
-        let line = '';
+        const width = 1000;
+        const padding = 50;
+
+        ctx.font = '18px sans-serif';
+        const paragraphs = contentText.split('\n');
         const lines = [];
         const maxLineWidth = width - (padding * 2) - 40;
-        
-        for (let n = 0; n < words.length; n++) {
-            const testLine = line + words[n] + ' ';
-            const metrics = ctx.measureText(testLine);
-            if (metrics.width > maxLineWidth && n > 0) {
-                lines.push(line);
-                line = words[n] + ' ';
-            } else {
-                line = testLine;
-            }
-        }
-        lines.push(line);
 
-        const calculatedHeight = Math.max(450, 220 + (lines.length * 26) + 80);
+        paragraphs.forEach(para => {
+            if (!para.trim()) {
+                lines.push('');
+                return;
+            }
+            const words = para.trim().split(' ');
+            let line = '';
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxLineWidth && n > 0) {
+                    lines.push(line.trim());
+                    line = words[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            lines.push(line.trim());
+        });
+
+        const calculatedHeight = Math.max(500, 240 + (lines.length * 30) + 90);
         canvas.width = width * 2;
         canvas.height = calculatedHeight * 2;
         ctx.scale(2, 2);
 
         // Dark gradient background
         const gradient = ctx.createLinearGradient(0, 0, 0, calculatedHeight);
-        gradient.addColorStop(0, '#161c2d');
-        gradient.addColorStop(1, '#0d111e');
+        gradient.addColorStop(0, '#0f172a');
+        gradient.addColorStop(1, '#020617');
         ctx.fillStyle = gradient;
-        
+
         ctx.beginPath();
         if (typeof ctx.roundRect === 'function') {
-            ctx.roundRect(0, 0, width, calculatedHeight, 16);
+            ctx.roundRect(0, 0, width, calculatedHeight, 20);
         } else {
             ctx.rect(0, 0, width, calculatedHeight);
         }
         ctx.fill();
-        ctx.strokeStyle = 'rgba(0, 200, 255, 0.3)';
+        ctx.strokeStyle = 'rgba(0, 210, 255, 0.4)';
         ctx.lineWidth = 2;
         ctx.stroke();
 
@@ -2020,58 +2230,70 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillStyle = '#00d2ff';
         ctx.beginPath();
         if (typeof ctx.roundRect === 'function') {
-            ctx.roundRect(padding, padding, 160, 34, 17);
+            ctx.roundRect(padding, padding, 180, 36, 18);
         } else {
-            ctx.rect(padding, padding, 160, 34);
+            ctx.rect(padding, padding, 180, 36);
         }
         ctx.fill();
 
         ctx.fillStyle = '#000000';
-        ctx.font = 'bold 13px sans-serif';
+        ctx.font = 'bold 14px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(categoryText.toUpperCase(), padding + 80, padding + 22);
+        ctx.fillText(categoryText.toUpperCase(), padding + 90, padding + 23);
 
         // Title
         ctx.textAlign = 'left';
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 24px sans-serif';
-        ctx.fillText(titleText, padding, padding + 75);
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = 'bold 28px sans-serif';
+        ctx.fillText(titleText, padding, padding + 85);
 
         // Line separator
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
         ctx.beginPath();
-        ctx.moveTo(padding, padding + 95);
-        ctx.lineTo(width - padding, padding + 95);
+        ctx.moveTo(padding, padding + 105);
+        ctx.lineTo(width - padding, padding + 105);
         ctx.stroke();
 
         // Content
         ctx.fillStyle = '#e2e8f0';
-        ctx.font = '16px sans-serif';
-        let startY = padding + 130;
+        ctx.font = '18px sans-serif';
+        let startY = padding + 145;
         for (let i = 0; i < lines.length; i++) {
-            ctx.fillText(lines[i], padding, startY + (i * 26));
+            if (lines[i] !== '') {
+                ctx.fillText(lines[i], padding, startY + (i * 30));
+            }
         }
 
-        // Date
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.font = '13px sans-serif';
-        ctx.fillText(dateText, padding, calculatedHeight - padding);
+        // Date and footer branding
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+        ctx.font = '14px sans-serif';
+        ctx.fillText(dateText || new Date().toLocaleDateString(), padding, calculatedHeight - padding);
 
-        try {
-            const dataUrl = canvas.toDataURL('image/png');
-            const link = document.createElement('a');
-            const safeTitle = titleText.replace(/[^a-zA-Z0-9_\-]/g, '_');
-            link.download = `Journal_${safeTitle}.png`;
-            link.href = dataUrl;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch(err) {
-            console.error("Native canvas export failed:", err);
-            alert('Image export failed.');
-        }
-        
-        dlBtn.innerHTML = origHtml;
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#00d2ff';
+        ctx.fillText('Shivam Portfolio & Vault', width - padding, calculatedHeight - padding);
+
+        canvas.toBlob((blob) => {
+            if (blob) {
+                const url = URL.createObjectURL(blob);
+                const safeTitle = titleText.replace(/[^a-zA-Z0-9_\-]/g, '_');
+                const link = document.createElement('a');
+                link.download = `Journal_${safeTitle}.png`;
+                link.href = url;
+                document.body.appendChild(link);
+                link.click();
+                setTimeout(() => {
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }, 2000);
+            }
+            dlBtn.disabled = false;
+            dlBtn.innerHTML = '<i class="fas fa-check"></i> Downloaded';
+            showVaultToast('Journal note image downloaded!');
+            setTimeout(() => {
+                dlBtn.innerHTML = origHtml;
+            }, 2500);
+        }, 'image/png');
     }
 
     function deleteJournalById(id) {

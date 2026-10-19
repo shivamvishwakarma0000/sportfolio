@@ -2,7 +2,31 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- PWA & Apple Mobile Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Shivam" />
+    <meta name="theme-color" content="#050810" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Manifest & Favicons (Cross-platform iOS & Android mobile support) -->
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="shortcut icon" type="image/png" href="favicon.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="64x64" href="favicon.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png" />
+    
+    <!-- Apple Touch Icons for iOS Safari & Home Screen -->
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon.png" />
+    <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png" />
+
     <title>Shivam Vishwakarma | Portfolio</title>
     <meta
       name="description"
@@ -404,7 +428,7 @@
                   <span>OpenCV</span>
                   <span>AI/ML</span>
                 </div>
-                <a href="https://smartvision-attendance.onrender.com" class="project-link"
+                <a href="https://smartvision-attendance.onrender.com" target="_blank" rel="noopener noreferrer" class="project-link"
                   >View Project <i class="fas fa-arrow-right"></i
                 ></a>
               </div>
@@ -544,7 +568,9 @@
                   <span>AI/ML</span>
                 </div>
                 <a
-                  href="https://satyamphysio.netlify.app/"
+                  href="https://vindhyaphysio.netlify.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   class="project-link"
                   >View Project <i class="fas fa-arrow-right"></i
                 ></a>
@@ -1605,6 +1631,25 @@
           </div>
         </div>
       </div>
+      
+      <!-- Custom Folder Delete Confirmation Modal (Long Press) -->
+      <div id="folder-delete-modal" class="vault-modal-overlay" style="z-index: 100060; align-items: center; justify-content: center; backdrop-filter: blur(15px);">
+        <div class="glass-card" style="width: 90%; max-width: 380px; padding: 2rem; text-align: center; border: 1px solid rgba(255, 51, 102, 0.35); box-shadow: 0 15px 45px rgba(255, 0, 80, 0.2); border-radius: 24px;">
+          <div style="width: 70px; height: 70px; margin: 0 auto 1.2rem; border-radius: 50%; background: rgba(255, 51, 102, 0.15); display: flex; align-items: center; justify-content: center; border: 1.5px solid rgba(255, 51, 102, 0.4);">
+            <i class="fas fa-trash-alt" style="font-size: 2rem; color: #ff3366;"></i>
+          </div>
+          <h3 style="color: #ffffff; margin-bottom: 0.5rem; font-size: 1.35rem; font-weight: 700;">Delete Folder?</h3>
+          <p style="color: rgba(255,255,255,0.7); font-size: 0.92rem; margin-bottom: 1.5rem; line-height: 1.5;">
+            Are you sure you want to delete folder <strong id="delete-folder-target-name" style="color: #ff3366; font-size: 1.05rem;">Folder</strong>? This folder and all its contents will be removed.
+          </p>
+          <div style="display: flex; gap: 12px;">
+            <button id="cancel-delete-folder-btn" class="btn btn-outline" style="flex: 1; padding: 12px; border-radius: 12px; font-weight: 500;">Cancel</button>
+            <button id="confirm-delete-folder-btn" class="btn" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #ff3366, #ff1a53); color: #fff; border: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 15px rgba(255,51,102,0.4);">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+      </div>
     </main>
 
     <footer class="glass-footer">
@@ -1818,7 +1863,7 @@
                   <p class="terminal-sub">(Selfie Smart Attendance)</p>
                   <p class="desc">A Flask-based AI portal utilizing facial recognition technology for automated, accurate, and seamless attendance tracking.</p>
                   <div class="tags"><span>Python</span><span>Flask</span><span>OpenCV</span><span>AI/ML</span></div>
-                  <a href="https://shivam8858-smart-vision.hf.space" target="_blank" class="t-project-link">VIEW PROJECT <i class="fas fa-external-link-alt"></i></a>
+                  <a href="https://smartvision-attendance.onrender.com" target="_blank" rel="noopener noreferrer" class="t-project-link">VIEW PROJECT <i class="fas fa-external-link-alt"></i></a>
                 </div>
               </div>
 
@@ -1872,7 +1917,7 @@
                   <p class="terminal-sub">Medical Web Solutions</p>
                   <p class="desc">Developed for a professional physiotherapy clinic. A modern, responsive website designed to showcase rehabilitation services, enable online consultations, and provide an intuitive experience for patients.</p>
                   <div class="tags"><span>Python</span><span>AI/ML</span></div>
-                  <a href="https://satyamphysio.netlify.app/" target="_blank" class="t-project-link">VIEW PROJECT <i class="fas fa-external-link-alt"></i></a>
+                  <a href="https://vindhyaphysio.netlify.app" target="_blank" rel="noopener noreferrer" class="t-project-link">VIEW PROJECT <i class="fas fa-external-link-alt"></i></a>
                 </div>
               </div>
 
@@ -2617,14 +2662,17 @@
                   <div class="form-buttons-row">
                     <button type="button" id="f-btn-cancel-note" class="f-btn-outline">Cancel</button>
                     <!-- Removing generic save note to prevent confusion, Journal is the primary save now -->
-                  </div>
                 </form>
-                
-                <div id="f-saved-journals-container" style="margin-top: 2rem;">
-                  <h3 style="color: #fff; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;"><i class="fas fa-book-open"></i> My Digital Journal</h3>
-                  <div id="f-saved-journals-list" style="display: flex; flex-direction: column; gap: 1rem;">
-                    <!-- Journals dynamically injected here -->
-                  </div>
+              </div>
+
+              <!-- My Digital Journal Notes (Always accessible in Personal Notes) -->
+              <div id="f-saved-journals-container" style="margin-top: 1.5rem;">
+                <h3 style="color: #fff; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
+                  <span><i class="fas fa-book-open" style="color: #00d2ff; margin-right: 8px;"></i> My Digital Journal</span>
+                  <span id="journal-count-badge" style="font-size: 0.8rem; background: rgba(0,210,255,0.15); color: #00d2ff; padding: 3px 10px; border-radius: 12px; font-weight: 500;">0 Notes</span>
+                </h3>
+                <div id="f-saved-journals-list" style="display: flex; flex-direction: column; gap: 1rem;">
+                  <!-- Journals dynamically injected here -->
                 </div>
               </div>
             </div>
